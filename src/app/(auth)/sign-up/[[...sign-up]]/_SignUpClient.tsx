@@ -13,7 +13,7 @@ const requirements = [
 ];
 const strengthColors = ["", "#E05A5A", "#E08A3D", "#D4C040", "#3DAB7A"];
 
-export default function SignUpClient() {
+export function SignUpClient() {
   const { isLoaded, signUp } = useSignUp();
   const { setActive } = useClerk();
   const { isSignedIn } = useAuth();

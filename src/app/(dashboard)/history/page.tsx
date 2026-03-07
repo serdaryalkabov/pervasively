@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import HistoryClient  from "./_HistoryClient";
+import {HistoryClient}  from "./_HistoryClient";
 
 export const metadata: Metadata = {
   title: "History – Pervasively",

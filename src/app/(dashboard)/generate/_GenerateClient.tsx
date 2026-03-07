@@ -161,7 +161,7 @@ function PlatformCard({ platform, content }: { platform: string; content: string
 }
 
 /* ─── Page ─── */
-export default function GenerateClient() {
+export function GenerateClient() {
   const { user } = useUser();
   const router   = useRouter();
   const { signOut } = useClerk();

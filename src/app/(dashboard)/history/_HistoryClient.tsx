@@ -170,7 +170,7 @@ function GenerationViewer({ generation, platforms, onClose }: {
   );
 }
 
-export default function HistoryClient() {
+export function HistoryClient() {
   const { user }   = useUser();
   const { signOut } = useClerk();
   const router     = useRouter();

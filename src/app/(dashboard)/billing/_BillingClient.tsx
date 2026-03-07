@@ -39,7 +39,7 @@ const PACKS = [
   { name: "Growth",   price: 45, credits: 28, perCredit: "1.60", desc: "~7 months of content" },
 ];
 
-export default function BillingPage() {
+export function BillingPage() {
   const { user }   = useUser();
   const router     = useRouter();
   const convexUser = useQuery(api.users.getUser, user ? { clerkId: user.id } : "skip");

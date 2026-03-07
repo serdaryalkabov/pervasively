@@ -4,7 +4,7 @@ import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function FeedbackClient() {
+export function FeedbackClient() {
   const { user } = useUser();
   const router   = useRouter();
 

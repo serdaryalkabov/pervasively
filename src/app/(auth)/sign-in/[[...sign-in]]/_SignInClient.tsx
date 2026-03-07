@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 
-export default function SignInClient() {
+export function SignInClient() {
   const { isLoaded, signIn } = useSignIn();
   const { setActive } = useClerk();
   const router = useRouter();

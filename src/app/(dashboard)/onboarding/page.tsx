@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import OnboardingClient  from "./_OnboardingClient";
+import {OnboardingClient}  from "./_OnboardingClient";
 
 export const metadata: Metadata = {
   title: "Create new product – Pervasively",

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import FeedbackClient  from "./_FeedbackClient";
+import {FeedbackClient}  from "./_FeedbackClient";
 
 export const metadata: Metadata = {
   title: "Feedback – Pervasively",

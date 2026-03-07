@@ -3,7 +3,7 @@
 import { useUser, useClerk } from "@clerk/nextjs";
 import { useMutation, useQuery } from "convex/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 
@@ -161,7 +161,7 @@ function PlatformCard({ platform, content }: { platform: string; content: string
 }
 
 /* ─── Page ─── */
-export function GenerateClient() {
+function GenerateInner() {
   const { user } = useUser();
   const router   = useRouter();
   const { signOut } = useClerk();
@@ -521,5 +521,13 @@ export function GenerateClient() {
         )}
       </main>
     </div>
+  );
+}
+
+export function GenerateClient() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: "100vh", background: "#080D10" }} />}>
+      <GenerateInner />
+    </Suspense>
   );
 }

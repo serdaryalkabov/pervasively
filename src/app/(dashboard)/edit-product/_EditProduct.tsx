@@ -4,7 +4,7 @@ import { useUser } from "@clerk/nextjs";
 import { useMutation, useQuery } from "convex/react";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { api } from "../../../../convex/_generated/api";
 
 type FormData = {
@@ -41,7 +41,7 @@ function StepHeader({ step, title, subtitle }: { step: number; title: string; su
   );
 }
 
-export function EditProductClient() {
+function EditProductInner() {
   const { user } = useUser();
   const router   = useRouter();
   const updateProduct = useMutation(api.products.updateProduct);
@@ -58,7 +58,6 @@ export function EditProductClient() {
   const [initialised, setInitialised] = useState(false);
   const [form, setForm] = useState<FormData>({ name: "", tagline: "", targetAudience: "", keyFeatures: "", tone: "", platforms: [] });
 
-  // Pre-fill form once product loads
   if (product && !initialised) {
     setForm({ name: product.name ?? "", tagline: product.tagline ?? "", targetAudience: product.targetAudience ?? "", keyFeatures: product.keyFeatures ?? "", tone: product.tone ?? "", platforms: product.platforms ?? [] });
     setInitialised(true);
@@ -105,7 +104,7 @@ export function EditProductClient() {
       {/* Top bar */}
       <div className="w-full max-w-lg flex items-center justify-between mb-10">
         <div className="flex items-center gap-2.5">
-        <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 24, height: 24, borderRadius: 6, objectFit: "cover", boxShadow: "0 0 10px rgba(25,97,117,0.35)" }} />
+          <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 24, height: 24, borderRadius: 6, objectFit: "cover", boxShadow: "0 0 10px rgba(25,97,117,0.35)" }} />
           <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 15, color: "#F0F4F5", letterSpacing: -0.4 }}>Pervasively</span>
         </div>
         <button onClick={() => router.push("/dashboard")} style={{ fontSize: 12, fontWeight: 500, color: "#3D5A62", background: "none", border: "none", cursor: "pointer" }} onMouseEnter={e => (e.currentTarget.style.color = "#8AABB5")} onMouseLeave={e => (e.currentTarget.style.color = "#3D5A62")}>← Dashboard</button>
@@ -193,5 +192,13 @@ export function EditProductClient() {
 
       </div>
     </div>
+  );
+}
+
+export function EditProductClient() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: "100vh", background: "#080D10" }} />}>
+      <EditProductInner />
+    </Suspense>
   );
 }

@@ -80,7 +80,7 @@ export function SignInClient() {
 
       {/* Card */}
       <div className={`relative z-10 w-full max-w-md mx-4 transition-all duration-700 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
-        <div style={{ background: "linear-gradient(145deg, rgba(12,20,23,0.95) 0%, rgba(8,13,16,0.98) 100%)", border: "1px solid rgba(25,97,117,0.2)", borderRadius: 24, padding: "40px 40px 36px", boxShadow: "0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03), inset 0 1px 0 rgba(255,255,255,0.05)", backdropFilter: "blur(20px)", overflow: "hidden" }}>
+        <div style={{ background: "linear-gradient(145deg, rgba(12,20,23,0.95) 0%, rgba(8,13,16,0.98) 100%)", border: "1px solid rgba(25,97,117,0.2)", borderRadius: 24, padding: "40px 40px 36px", boxShadow: "0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03), inset 0 1px 0 rgba(255,255,255,0.05)", backdropFilter: "blur(20px)", borderRadius: 24 }}>
 
           {/* Header */}
           <div style={{ marginBottom: 28 }}>

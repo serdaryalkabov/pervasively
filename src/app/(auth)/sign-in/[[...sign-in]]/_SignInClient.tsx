@@ -115,8 +115,9 @@ export function SignInClient() {
                 fontFamily: "'DM Sans', sans-serif",
               },
               elements: {
-                rootBox: { width: "100%" },
-                card: { background: "transparent", boxShadow: "none", border: "none", padding: 0, width: "100%" },
+                rootBox: { width: "100%", overflow: "hidden" },
+                card: { background: "transparent", boxShadow: "none", border: "none", padding: 0, width: "100%", minWidth: "unset" },
+                cardBox: { width: "100%", minWidth: "unset", boxShadow: "none" },
                 headerTitle: { display: "none" },
                 headerSubtitle: { display: "none" },
                 header: { display: "none" },

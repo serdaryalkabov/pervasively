@@ -74,6 +74,7 @@ export function SignInClient() {
     setError("");
     try {
       const result = await signIn.create({ identifier: email, password });
+      console.log("Sign in result:", JSON.stringify(result));
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId });
         router.replace("/dashboard");

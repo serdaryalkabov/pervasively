@@ -3,7 +3,7 @@ import { Providers } from "@/components/providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Pervasively",
+  title: "Pervasively – Content egine for solpreneurs",
   description: "Content engine for solopreneurs",
   icons: {icon: [{ url: '/pervasively.jpg', type: 'image/png', sizes: '32x32' }]},
 };

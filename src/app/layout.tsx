@@ -3,11 +3,31 @@ import { Providers } from "@/components/providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Pervasively – Content egine for solpreneurs",
-  description: "Content engine for solopreneurs",
-  icons: {icon: [{ url: '/pervasively.jpg', type: 'image/png', sizes: '32x32' }]},
+  title: "Pervasively – Content engine for solopreneurs",
+  description: "Pervasively turns your product knowledge into a full week of platform-ready content — Twitter/X, Instagram, LinkedIn — in under 10 minutes. No prompting. No guessing. Just post.",
+  icons: { icon: [{ url: '/pervasively.jpg', type: 'image/png', sizes: '32x32' }] },
+  openGraph: {
+    title: "Pervasively – Content engine for solopreneurs",
+    description: "Generate 7 days of platform-native social posts from your product brief. No prompting. Just post.",
+    url: "https://pervasively.org",
+    siteName: "Pervasively",
+    images: [
+      {
+        url: "https://pervasively.org/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Pervasively – Content engine for solopreneurs",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Pervasively – Content engine for solopreneurs",
+    description: "Generate 7 days of platform-native social posts from your product brief. No prompting. Just post.",
+    images: ["https://pervasively.org/og-image.png"],
+  },
 };
-
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

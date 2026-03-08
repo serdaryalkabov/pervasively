@@ -80,7 +80,7 @@ export function SignInClient() {
 
       {/* Card */}
       <div className={`relative z-10 w-full max-w-md mx-4 transition-all duration-700 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
-        <div style={{ background: "linear-gradient(145deg, rgba(12,20,23,0.95) 0%, rgba(8,13,16,0.98) 100%)", border: "1px solid rgba(25,97,117,0.2)", borderRadius: 24, padding: "40px 40px 36px", boxShadow: "0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03), inset 0 1px 0 rgba(255,255,255,0.05)", backdropFilter: "blur(20px)" }}>
+        <div style={{ background: "linear-gradient(145deg, rgba(12,20,23,0.95) 0%, rgba(8,13,16,0.98) 100%)", border: "1px solid rgba(25,97,117,0.2)", borderRadius: 24, padding: "40px 40px 36px", boxShadow: "0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03), inset 0 1px 0 rgba(255,255,255,0.05)", backdropFilter: "blur(20px)", overflow: "hidden" }}>
 
           {/* Header */}
           <div style={{ marginBottom: 28 }}>
@@ -98,59 +98,82 @@ export function SignInClient() {
             </p>
           </div>
 
-          {/* Clerk prebuilt SignIn — handles all auth flows including needs_client_trust */}
-          <SignIn
-            routing="hash"
-            afterSignInUrl="/dashboard"
-            appearance={{
-              variables: {
-                colorPrimary: "#196175",
-                colorBackground: "transparent",
-                colorInputBackground: "rgba(255,255,255,0.02)",
-                colorInputText: "#F0F4F5",
-                colorText: "#F0F4F5",
-                colorTextSecondary: "#4A6B75",
-                colorNeutral: "#4A6B75",
-                borderRadius: "12px",
-                fontFamily: "'DM Sans', sans-serif",
-              },
-              elements: {
-                rootBox: { width: "100%", overflow: "hidden" },
-                card: { background: "transparent", boxShadow: "none", border: "none", padding: 0, width: "100%", minWidth: "unset" },
-                cardBox: { width: "100%", minWidth: "unset", boxShadow: "none" },
-                headerTitle: { display: "none" },
-                headerSubtitle: { display: "none" },
-                header: { display: "none" },
-                socialButtonsBlockButton: {
-                  border: "1px solid rgba(255,255,255,0.06)",
-                  background: "rgba(255,255,255,0.02)",
-                  color: "#6B8A92",
-                },
-                dividerLine: { background: "rgba(255,255,255,0.05)" },
-                dividerText: { color: "#2D4A52" },
-                formFieldLabel: { color: "#3D5A62", fontSize: "10px", fontWeight: "700", letterSpacing: "0.14em", textTransform: "uppercase" },
-                formFieldInput: {
-                  border: "1px solid rgba(255,255,255,0.06)",
-                  background: "rgba(255,255,255,0.02)",
-                  color: "#F0F4F5",
+          {/* Clerk SignIn — constrained wrapper forces full width */}
+          <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+            <SignIn
+              routing="hash"
+              afterSignInUrl="/dashboard"
+              appearance={{
+                variables: {
+                  colorPrimary: "#196175",
+                  colorBackground: "transparent",
+                  colorInputBackground: "rgba(255,255,255,0.02)",
+                  colorInputText: "#F0F4F5",
+                  colorText: "#F0F4F5",
+                  colorTextSecondary: "#4A6B75",
+                  colorNeutral: "#4A6B75",
                   borderRadius: "12px",
+                  fontFamily: "'DM Sans', sans-serif",
+                  spacingUnit: "16px",
                 },
-                formButtonPrimary: {
-                  background: "linear-gradient(135deg, #196175 0%, #1a6e82 100%)",
-                  border: "1px solid rgba(25,97,117,0.4)",
-                  boxShadow: "0 4px 20px rgba(25,97,117,0.35), inset 0 1px 0 rgba(255,255,255,0.1)",
-                  fontSize: "14px",
-                  fontWeight: "600",
-                  borderRadius: "12px",
+                elements: {
+                  rootBox: {
+                    width: "100%",
+                    minWidth: "0",
+                  },
+                  cardBox: {
+                    width: "100%",
+                    minWidth: "0",
+                    boxShadow: "none",
+                  },
+                  card: {
+                    background: "transparent",
+                    boxShadow: "none",
+                    border: "none",
+                    padding: 0,
+                    width: "100%",
+                    minWidth: "0",
+                  },
+                  headerTitle: { display: "none" },
+                  headerSubtitle: { display: "none" },
+                  header: { display: "none" },
+                  socialButtonsBlockButton: {
+                    border: "1px solid rgba(255,255,255,0.06)",
+                    background: "rgba(255,255,255,0.02)",
+                    color: "#6B8A92",
+                  },
+                  dividerLine: { background: "rgba(255,255,255,0.05)" },
+                  dividerText: { color: "#2D4A52" },
+                  formFieldLabel: {
+                    color: "#3D5A62",
+                    fontSize: "10px",
+                    fontWeight: "700",
+                    letterSpacing: "0.14em",
+                    textTransform: "uppercase",
+                  },
+                  formFieldInput: {
+                    border: "1px solid rgba(255,255,255,0.06)",
+                    background: "rgba(255,255,255,0.02)",
+                    color: "#F0F4F5",
+                    borderRadius: "12px",
+                  },
+                  formButtonPrimary: {
+                    background: "linear-gradient(135deg, #196175 0%, #1a6e82 100%)",
+                    border: "1px solid rgba(25,97,117,0.4)",
+                    boxShadow: "0 4px 20px rgba(25,97,117,0.35), inset 0 1px 0 rgba(255,255,255,0.1)",
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    borderRadius: "12px",
+                  },
+                  footerAction: { display: "none" },
+                  footer: { display: "none" },
+                  identityPreviewText: { color: "#C5D8DC" },
+                  identityPreviewEditButton: { color: "#2AA5C0" },
+                  alert: { borderRadius: "10px" },
                 },
-                footerAction: { display: "none" },
-                footer: { display: "none" },
-                identityPreviewText: { color: "#C5D8DC" },
-                identityPreviewEditButton: { color: "#2AA5C0" },
-                alert: { borderRadius: "10px" },
-              },
-            }}
-          />
+              }}
+            />
+          </div>
 
           {/* Custom footer */}
           <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "24px 0" }}>
@@ -174,6 +197,7 @@ export function SignInClient() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
         * { box-sizing: border-box; }
+        .cl-rootBox, .cl-cardBox, .cl-card { width: 100% !important; min-width: 0 !important; }
       `}</style>
     </div>
   );

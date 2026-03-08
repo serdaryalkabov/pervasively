@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     siteName: "Pervasively",
     images: [
       {
-        url: "https://pervasively.org/og-image.png",
+        url: "https://pervasively.org/og-pervasively.png",
         width: 1200,
         height: 630,
         alt: "Pervasively – Content engine for solopreneurs",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Pervasively – Content engine for solopreneurs",
     description: "Generate 7 days of platform-native social posts from your product brief. No prompting. Just post.",
-    images: ["https://pervasively.org/og-image.png"],
+    images: ["https://pervasively.org/og-pervasively.png"],
   },
 };
 

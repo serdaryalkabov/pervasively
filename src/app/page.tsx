@@ -380,6 +380,9 @@ export default function LandingPage() {
       {/* FOOTER */}
       <footer style={{ position:"relative", zIndex:1, borderTop:"1px solid var(--border)", padding:"36px 56px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
         <a href="#" style={{ fontFamily:"'Manrope',sans-serif", fontSize:19, fontWeight:800, color:"var(--text)", textDecoration:"none", letterSpacing:-0.5 }}>Pervasive<span style={{ color:"var(--teal-bright)" }}>ly</span></a>
+        <a href="https://turbo0.com/item/pervasively" target="_blank" rel="noopener noreferrer">
+          <img src="https://img.turbo0.com/badge-listed-light.svg" alt="Listed on Turbo0" style={{ height:54, width:"auto" }} />
+        </a>
         <div className="footer-right" style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:8 }}>
           <span style={{ fontSize:12, color:"var(--muted2)" }}>© 2026 Pervasively</span>
           <span style={{ fontSize:12, color:"var(--muted2)" }}>Built by a solopreneur, for solopreneurs</span>

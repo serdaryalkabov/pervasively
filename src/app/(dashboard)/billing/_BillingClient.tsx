@@ -42,7 +42,7 @@ const PACKS = [
     credits: 5,
     perCredit: "2.40",
     desc: "~5 weeks of content",
-    priceId: 'pri_01kncktkb8n313h2j59kfmt1g8',
+    priceId: 'pri_01kncwnma1egw3jxh2dsmb5qgq',
   },
   {
     name: "Builder",
@@ -51,7 +51,7 @@ const PACKS = [
     perCredit: "2.00",
     desc: "~3 months of content",
     featured: true,
-    priceId: 'pri_01knckshbmjch0319y5fwekb8n',
+    priceId: 'pri_01kncwmza3baw3enp3x6d2mdx2',
   },
   {
     name: "Growth",
@@ -59,7 +59,7 @@ const PACKS = [
     credits: 28,
     perCredit: "1.60",
     desc: "~7 months of content",
-    priceId: 'pri_01knckr7evbfx2dwej8pt7267p',
+    priceId: 'pri_01kncwm3pggvb9ajjad28wet71',
   },
 ];
 
@@ -76,8 +76,8 @@ export function BillingPage() {
   useEffect(() => {
     async function loadPaddle() {
       const paddle = await initializePaddle({
-        environment: "sandbox", // change to "production" when going live
-        token: 'test_f5d2335010a841e982c8ad3dae5',
+        environment: "production", // change to "production" when going live
+        token: 'live_f2d8f63d45c61159c537598d192',
       });
       paddleRef.current = paddle ?? null;
     }
@@ -161,7 +161,7 @@ export function BillingPage() {
               boxShadow: pack.featured ? "0 0 32px rgba(25,97,117,0.1)" : "none",
             }}>
               {pack.featured && (
-                <div style={{ position: "absolute", top: -1, left: "50%", transform: "translateX(-50%)", background: "linear-gradient(90deg, #196175, #2AA5C0)", color: "#fff", fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", padding: "3px 12px", borderRadius: "0 0 8px 8px" }}>
+                <div style={{ position: "absolute", top: -1, left: "50%", transform: "translateX(-50%)", background: "linear-gradient(90deg, #196175, #2AA5C0)", color: "#fff", fontSize: 7, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", padding: "3px 12px", borderRadius: "0 0 8px 8px" }}>
                   Most popular
                 </div>
               )}

@@ -87,9 +87,12 @@ export function BillingPage() {
   const openCheckout = (pack: typeof PACKS[0]) => {
     if (!paddleRef.current || !user) return;
     setLoadingPack(pack.name);
+  
+    const email = user.primaryEmailAddress?.emailAddress;
+  
     paddleRef.current.Checkout.open({
       items: [{ priceId: pack.priceId, quantity: 1 }],
-      customer: { email: user.primaryEmailAddress?.emailAddress },
+      ...(email && { customer: { email } }),
       customData: {
         clerkId: user.id,
         credits: pack.credits,
@@ -99,7 +102,7 @@ export function BillingPage() {
         theme: "dark",
       },
     });
-    // Reset loading state after checkout opens
+  
     setTimeout(() => setLoadingPack(null), 1500);
   };
 

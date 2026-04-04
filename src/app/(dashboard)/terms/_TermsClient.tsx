@@ -124,7 +124,7 @@ export function TermsClient() {
             <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
           </svg>
           <p style={{ fontSize: 13, color: "#3D6672", lineHeight: 1.6, margin: 0 }}>
-            Questions about these terms?{" "}
+            Questions about the terms?{" "}
             <a href="mailto:yalkabovserdar07@gmail.com" style={{ color: "#2AA5C0", textDecoration: "none", fontWeight: 500 }}>
               yalkabovserdar07@gmail.com
             </a>

@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
+import { initializePaddle, Paddle } from "@paddle/paddle-js";
 import { api } from "../../../../convex/_generated/api";
 
 function NavBar({ credits, onBack }: { credits: number; onBack: () => void }) {
@@ -34,18 +36,72 @@ function NavBar({ credits, onBack }: { credits: number; onBack: () => void }) {
 }
 
 const PACKS = [
-  { name: "Starter",  price: 12, credits: 5,  perCredit: "2.40", desc: "~5 weeks of content" },
-  { name: "Builder",  price: 24, credits: 12, perCredit: "2.00", desc: "~3 months of content", featured: true },
-  { name: "Growth",   price: 45, credits: 28, perCredit: "1.60", desc: "~7 months of content" },
+  {
+    name: "Starter",
+    price: 12,
+    credits: 5,
+    perCredit: "2.40",
+    desc: "~5 weeks of content",
+    priceId: 'pri_01kncktkb8n313h2j59kfmt1g8',
+  },
+  {
+    name: "Builder",
+    price: 24,
+    credits: 12,
+    perCredit: "2.00",
+    desc: "~3 months of content",
+    featured: true,
+    priceId: 'pri_01knckshbmjch0319y5fwekb8n',
+  },
+  {
+    name: "Growth",
+    price: 45,
+    credits: 28,
+    perCredit: "1.60",
+    desc: "~7 months of content",
+    priceId: 'pri_01knckr7evbfx2dwej8pt7267p',
+  },
 ];
 
 export function BillingPage() {
-  const { user }   = useUser();
-  const router     = useRouter();
-  const convexUser = useQuery(api.users.getUser, user ? { clerkId: user.id } : "skip");
-  const credits    = convexUser?.credits ?? 0;
+  const { user }    = useUser();
+  const router      = useRouter();
+  const convexUser  = useQuery(api.users.getUser, user ? { clerkId: user.id } : "skip");
+  const credits     = convexUser?.credits ?? 0;
+  const paddleRef   = useRef<Paddle | null>(null);
+  const [loadingPack, setLoadingPack] = useState<string | null>(null);
 
   const isLoading = convexUser === undefined;
+
+  useEffect(() => {
+    async function loadPaddle() {
+      const paddle = await initializePaddle({
+        environment: "sandbox", // change to "production" when going live
+        token: 'test_f5d2335010a841e982c8ad3dae5',
+      });
+      paddleRef.current = paddle ?? null;
+    }
+    loadPaddle();
+  }, []);
+
+  const openCheckout = (pack: typeof PACKS[0]) => {
+    if (!paddleRef.current || !user) return;
+    setLoadingPack(pack.name);
+    paddleRef.current.Checkout.open({
+      items: [{ priceId: pack.priceId, quantity: 1 }],
+      customer: { email: user.primaryEmailAddress?.emailAddress },
+      customData: {
+        clerkId: user.id,
+        credits: pack.credits,
+      },
+      settings: {
+        displayMode: "overlay",
+        theme: "dark",
+      },
+    });
+    // Reset loading state after checkout opens
+    setTimeout(() => setLoadingPack(null), 1500);
+  };
 
   if (isLoading) return (
     <div style={{ minHeight: "100vh", background: "#080D10", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -89,18 +145,6 @@ export function BillingPage() {
           </div>
         </div>
 
-        {/* Coming soon banner */}
-        <div style={{ background: "rgba(25,97,117,0.07)", border: "1px solid rgba(42,165,192,0.15)", borderRadius: 14, padding: "16px 20px", marginBottom: 32, display: "flex", alignItems: "center", gap: 12 }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2AA5C0" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, opacity: 0.7 }}>
-            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-          </svg>
-          <p style={{ fontSize: 13, color: "#3D6672", lineHeight: 1.5 }}>
-            Payments are coming soon. During early access, credits are added manually.{" "}
-            <a href="mailto:support@pervasively.co" style={{ color: "#2AA5C0", textDecoration: "none", fontWeight: 500 }}>Contact us</a>{" "}
-            if you need a top-up.
-          </p>
-        </div>
-
         {/* Credit packs */}
         <h2 style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#2E4A55", marginBottom: 14 }}>Credit packs</h2>
 
@@ -130,23 +174,36 @@ export function BillingPage() {
               </p>
               <p style={{ fontSize: 11.5, color: "#2E4A55", marginBottom: 16 }}>{pack.desc}</p>
               <button
-                disabled
+                onClick={() => openCheckout(pack)}
+                disabled={loadingPack === pack.name}
                 style={{
                   width: "100%", padding: "10px 0",
-                  background: pack.featured ? "rgba(25,97,117,0.2)" : "rgba(255,255,255,0.04)",
-                  border: pack.featured ? "1px solid rgba(42,165,192,0.2)" : "1px solid rgba(255,255,255,0.07)",
-                  borderRadius: 10, color: "#2E4A55", fontSize: 12, fontWeight: 600,
-                  cursor: "not-allowed", letterSpacing: -0.1,
+                  background: pack.featured ? "rgba(25,97,117,0.35)" : "rgba(255,255,255,0.06)",
+                  border: pack.featured ? "1px solid rgba(42,165,192,0.35)" : "1px solid rgba(255,255,255,0.10)",
+                  borderRadius: 10,
+                  color: pack.featured ? "#2AA5C0" : "#8AABB5",
+                  fontSize: 12, fontWeight: 600,
+                  cursor: loadingPack === pack.name ? "wait" : "pointer",
+                  letterSpacing: -0.1,
+                  transition: "background 0.15s, border-color 0.15s",
+                  opacity: loadingPack && loadingPack !== pack.name ? 0.5 : 1,
+                }}
+                onMouseEnter={e => {
+                  if (loadingPack) return;
+                  e.currentTarget.style.background = pack.featured ? "rgba(25,97,117,0.5)" : "rgba(255,255,255,0.10)";
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = pack.featured ? "rgba(25,97,117,0.35)" : "rgba(255,255,255,0.06)";
                 }}
               >
-                Coming soon
+                {loadingPack === pack.name ? "Opening…" : `Get ${pack.credits} credits`}
               </button>
             </div>
           ))}
         </div>
 
         <p style={{ fontSize: 12, color: "#2E4A55", textAlign: "center" }}>
-          1 credit = 7 days × {" "}3 platforms = 21 posts · Credits never expire
+          1 credit = 7 days × 3 platforms = 21 posts · Credits never expire
         </p>
 
       </main>

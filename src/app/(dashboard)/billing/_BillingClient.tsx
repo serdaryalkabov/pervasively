@@ -76,7 +76,7 @@ export function BillingPage() {
   useEffect(() => {
     async function loadPaddle() {
       const paddle = await initializePaddle({
-        environment: "production", // change to "production" when going live
+        environment: "production", 
         token: 'live_f2d8f63d45c61159c537598d192',
       });
       paddleRef.current = paddle ?? null;

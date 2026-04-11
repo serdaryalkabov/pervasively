@@ -13,6 +13,7 @@ type FormData = {
   keyFeatures:    string;
   tone:           string;
   platforms:      string[];
+  examplePosts:   string[];
 };
 
 const TONES = [
@@ -28,7 +29,7 @@ const PLATFORMS = [
   { value: "linkedin",  label: "LinkedIn" },
 ];
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 
 function StepHeader({ step, title, subtitle }: { step: number; title: string; subtitle: string }) {
   return (
@@ -49,10 +50,13 @@ export function OnboardingClient() {
   const [step, setStep]     = useState(1);
   const [saving, setSaving] = useState(false);
   const [error, setError]   = useState("");
-  const [form, setForm]     = useState<FormData>({ name: "", tagline: "", targetAudience: "", keyFeatures: "", tone: "", platforms: [] });
+  const [form, setForm] = useState<FormData>({ name: "", tagline: "", targetAudience: "", keyFeatures: "", tone: "", platforms: [], examplePosts: [""] });
 
   const update = (field: keyof FormData, value: string | string[]) => setForm(prev => ({ ...prev, [field]: value }));
   const togglePlatform = (value: string) => setForm(prev => ({ ...prev, platforms: prev.platforms.includes(value) ? prev.platforms.filter(p => p !== value) : [...prev.platforms, value] }));
+  const updateExamplePost = (index: number, value: string) => setForm(prev => { const posts = [...prev.examplePosts]; posts[index] = value; return { ...prev, examplePosts: posts }; });
+  const addExamplePost = () => setForm(prev => prev.examplePosts.length < 3 ? { ...prev, examplePosts: [...prev.examplePosts, ""] } : prev);
+  const removeExamplePost = (index: number) => setForm(prev => ({ ...prev, examplePosts: prev.examplePosts.filter((_, i) => i !== index) }));
 
   const canProceed = () => {
     if (step === 1) return form.name.trim() && form.tagline.trim();
@@ -60,6 +64,7 @@ export function OnboardingClient() {
     if (step === 3) return form.keyFeatures.trim();
     if (step === 4) return form.tone;
     if (step === 5) return form.platforms.length > 0;
+    if (step === 6) return true; // example posts are optional
     return false;
   };
 
@@ -69,7 +74,8 @@ export function OnboardingClient() {
     if (!user) return;
     setSaving(true); setError("");
     try {
-      await upsertUser({ clerkId: user.id, email: user.emailAddresses[0]?.emailAddress ?? "" });
+      const filledPosts = form.examplePosts.filter(p => p.trim());
+      await upsertUser({ clerkId: user.id, email: user.emailAddresses[0]?.emailAddress ?? "", examplePosts: filledPosts });
       await createProduct({ userId: user.id, name: form.name, tagline: form.tagline, targetAudience: form.targetAudience, keyFeatures: form.keyFeatures, tone: form.tone, platforms: form.platforms });
       router.replace("/dashboard");
     } catch { setError("Something went wrong. Please try again."); setSaving(false); }
@@ -112,14 +118,14 @@ export function OnboardingClient() {
 
         {step === 2 && (
           <>
-            <StepHeader step={2} title="Who is it for?" subtitle="Describe your target audience — who they are and what problem they have that your product solves." />
+            <StepHeader step={2} title="Who is it for?" subtitle="Describe your target audience: who they are and what problem they have that your product solves." />
             <textarea value={form.targetAudience} onChange={e => update("targetAudience", e.target.value)} placeholder="e.g. Developer solopreneurs who build side projects but struggle to find time to market them consistently on social media." rows={5} className="w-full bg-[#101C20] border border-white/[0.07] rounded-xl px-4 py-3 text-sm text-[#F0F4F5] placeholder-[#3D5A62] outline-none focus:border-[#196175] focus:ring-1 focus:ring-[#196175]/30 transition resize-none" />
           </>
         )}
 
         {step === 3 && (
           <>
-            <StepHeader step={3} title="What does it do?" subtitle="List your key features. One per line works great — be specific, not generic." />
+            <StepHeader step={3} title="What does it do?" subtitle="List your key features. One per line works great: be specific, not generic." />
             <textarea value={form.keyFeatures} onChange={e => update("keyFeatures", e.target.value)} placeholder={`e.g.\n- Generates a week of social posts in one click\n- Platform-native content for Twitter, Instagram, LinkedIn\n- Learns your brand voice over time\n- Usage-based credits, no monthly lock-in`} rows={7} className="w-full bg-[#101C20] border border-white/[0.07] rounded-xl px-4 py-3 text-sm text-[#F0F4F5] placeholder-[#3D5A62] outline-none focus:border-[#196175] focus:ring-1 focus:ring-[#196175]/30 transition resize-none" />
           </>
         )}
@@ -153,6 +159,37 @@ export function OnboardingClient() {
                   </button>
                 );
               })}
+            </div>
+          </>
+        )}
+
+        {step === 6 && (
+          <>
+            <StepHeader step={6} title="Show us how you write" subtitle="Paste 1–3 real posts you've written. We'll study your voice: word choice, sentence length, what you tend to talk about: and mirror it in every generation. Skip if you'd rather start fresh." />
+            <div className="space-y-4">
+              {form.examplePosts.map((post, i) => (
+                <div key={i} className="relative">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-semibold tracking-widest text-[#6B8A92] uppercase">Example Post {i + 1}</label>
+                    {form.examplePosts.length > 1 && (
+                      <button onClick={() => removeExamplePost(i)} className="text-xs text-[#3D5A62] hover:text-[#E05A5A] transition">Remove</button>
+                    )}
+                  </div>
+                  <textarea
+                    value={post}
+                    onChange={e => updateExamplePost(i, e.target.value)}
+                    placeholder={i === 0 ? "Paste a post you're proud of: anything from any platform..." : "Another example (optional)..."}
+                    rows={4}
+                    className="w-full bg-[#101C20] border border-white/[0.07] rounded-xl px-4 py-3 text-sm text-[#F0F4F5] placeholder-[#3D5A62] outline-none focus:border-[#196175] focus:ring-1 focus:ring-[#196175]/30 transition resize-none"
+                  />
+                </div>
+              ))}
+              {form.examplePosts.length < 3 && (
+                <button onClick={addExamplePost} className="w-full py-3 rounded-xl border border-dashed border-[#196175]/40 text-sm text-[#6B8A92] hover:border-[#196175] hover:text-[#1E7A91] transition">
+                  + Add another example
+                </button>
+              )}
+              <p className="text-xs text-[#3D5A62] text-center pt-1">This step is optional: you can add or update examples later in Settings.</p>
             </div>
           </>
         )}

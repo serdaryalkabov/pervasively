@@ -8,10 +8,14 @@ const client = new Anthropic({
 export async function POST(req: NextRequest) {
   console.log("API KEY:", process.env.ANTHROPIC_API_KEY?.slice(0, 12));
   try {
-    const { product } = await req.json();
+    const { product, examplePosts } = await req.json();
+
+    const voiceSection = examplePosts && examplePosts.filter((p: string) => p.trim()).length > 0
+      ? `\nThe user has provided the following real posts they've written. Study them carefully to extract their natural voice — notice their sentence length, vocabulary level, what topics they gravitate toward, how they open posts, whether they use questions or statements, their use of punctuation, and any recurring patterns. Mirror this style authentically in every generated post:\n\n${examplePosts.filter((p: string) => p.trim()).map((p: string, i: number) => `[Example ${i + 1}]\n${p.trim()}`).join("\n\n")}\n`
+      : "";
 
     const prompt = `You are a world-class social media content strategist specializing in helping solopreneur developers market their products.
-
+${voiceSection}
 Here is the product brief:
 - Name: ${product.name}
 - Tagline: ${product.tagline}
@@ -27,14 +31,19 @@ Rules:
 - Twitter/X posts must be under 280 characters, hook-first, no hashtag stuffing (max 2)
 - Instagram posts should have a hook before the fold, value body, and a CTA. Suggest a visual direction in brackets at the end
 - LinkedIn posts should be 150-250 words, personal narrative tone, end with a question
-- Mix content types across the 7 days in this order:
-    Day 1 = Value post
-    Day 2 = Product / feature post
-    Day 3 = Story / founder post
-    Day 4 = Hot take / opinion post
-    Day 5 = Behind the scenes post
-    Day 6 = Social proof / milestone post
-    Day 7 = CTA / engagement post
+- Choose the best content mix and sequence for these 7 days based on the product, its audience, and the user's voice. Do not follow a fixed formula.
+- Draw from this palette of post types — pick whichever 7 serve this product best, in whatever order makes sense:
+    - Value / tip: teach something genuinely useful to the target audience
+    - Product / feature: spotlight what the product does, concretely
+    - Founder / story: a personal moment, decision, or lesson behind building it
+    - Hot take / opinion: a contrarian or provocative angle relevant to the niche
+    - Behind the scenes: the process, the tools, the unglamorous reality
+    - Social proof / milestone: a win, a number, a user reaction
+    - Problem / pain: articulate the exact frustration the product solves
+    - Comparison: how this approach differs from the old way of doing things
+    - CTA / engagement: ask something, invite a reply, drive a specific action
+- You may repeat a type if it genuinely serves the week better. You may skip types that don't fit.
+- Sequence matters: open the week with something that earns attention, not a sales pitch.
 - Match the tone: ${product.tone}
 - Never be generic — every post must reference the actual product and audience
 - Vary the opening lines across all 7 days — no two posts should start the same way

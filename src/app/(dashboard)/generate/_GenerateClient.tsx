@@ -205,7 +205,10 @@ function GenerateInner() {
       const res  = await fetch("/api/generate", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ product }),
+        body:    JSON.stringify({
+          product,
+          examplePosts: convexUser?.examplePosts ?? [],
+        }),
       });
       const json = await res.json();
       if (!json.success) {
@@ -342,7 +345,7 @@ function GenerateInner() {
         <div className="mb-10">
           <p className="text-xs font-bold uppercase mb-2" style={{ color: "#196175", letterSpacing: "0.12em" }}>Content generation</p>
           <h1 className="font-bold tracking-tight mb-1.5" style={{ fontSize: 26, letterSpacing: -0.7, color: "#EDF2F4" }}>
-            {generated ? `${product.name} — this week` : "Generate your week"}
+            {generated ? `${product.name} this week` : "Generate your week"}
           </h1>
           <p className="text-sm" style={{ color: "#3D5A62" }}>
             {generated

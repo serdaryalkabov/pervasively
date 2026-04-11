@@ -5,6 +5,7 @@ import { useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { api } from "../../../../convex/_generated/api";
+import { ChevronLeft, ChevronRight, MoveRight } from "lucide-react";
 
 type Post = { twitter?: string; instagram?: string; linkedin?: string };
 type Day  = { day: number; type: string; posts: Post };
@@ -72,7 +73,7 @@ function PlatformCard({ platform, content }: { platform: string; content: string
           <div style={{ width: 26, height: 26, borderRadius: 7, background: "rgba(25,97,117,0.15)", border: "1px solid rgba(42,165,192,0.18)", display: "flex", alignItems: "center", justifyContent: "center" }}>
             {PLATFORM_ICONS[platform]}
           </div>
-          <span style={{ fontSize: 11.5, fontWeight: 600 }}>{PLATFORM_LABELS[platform] ?? platform}</span>
+          <span style={{ fontSize: 11.5, fontWeight: 500 }}>{PLATFORM_LABELS[platform] ?? platform}</span>
         </div>
         <CopyButton text={content} />
       </div>
@@ -113,8 +114,8 @@ function GenerationViewer({ generation, platforms, onClose }: {
         {/* Modal nav */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 32 }}>
           <div>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#196175", marginBottom: 4 }}>Generation</p>
-            <h2 style={{ fontSize: 18, fontWeight: 600, color: "#EDF2F4", letterSpacing: -0.4 }}>{date}</h2>
+            <p style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#196175", marginBottom: 4 }}>Generation</p>
+            <h2 style={{ fontSize: 18, fontWeight: 500, color: "#EDF2F4", letterSpacing: -0.4 }}>{date}</h2>
             <p style={{ fontSize: 12, color: "#2E4A55", marginTop: 2 }}>
               {totalDays} days · {platforms.length} platform{platforms.length !== 1 ? "s" : ""} · {totalDays * platforms.length} posts
             </p>
@@ -125,7 +126,7 @@ function GenerationViewer({ generation, platforms, onClose }: {
             onMouseEnter={e => (e.currentTarget.style.color = "#8AABB5")}
             onMouseLeave={e => (e.currentTarget.style.color = "#3D5A62")}
           >
-            ✕ Close
+            Close
           </button>
         </div>
 
@@ -134,8 +135,8 @@ function GenerationViewer({ generation, platforms, onClose }: {
           {days.map(day => {
             const active = day.day === activeDay;
             return (
-              <button key={day.day} onClick={() => setActiveDay(day.day)} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, padding: "10px 16px", borderRadius: 12, flexShrink: 0, background: active ? "rgba(25,97,117,0.18)" : "rgba(12,20,23,0.55)", border: active ? "1px solid rgba(42,165,192,0.35)" : "1px solid rgba(255,255,255,0.052)", boxShadow: active ? "0 0 16px rgba(25,97,117,0.14)" : "none", cursor: "pointer", outline: "none" }}>
-                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.09em", color: active ? "#2AA5C0" : "#2E4A55" }}>DAY {day.day}</span>
+              <button key={day.day} onClick={() => setActiveDay(day.day)} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, padding: "10px 16px", borderRadius: 12, flexShrink: 0, background: active ? "rgba(25,97,117,0.18)" : "rgba(12,20,23,0.55)", border: active ? "1px solid rgba(42,165,192,0.35)" : "1px solid rgba(255,255,255,0.052)", cursor: "pointer", outline: "none" }}>
+                <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: "0.09em", color: active ? "#2AA5C0" : "#2E4A55" }}>DAY {day.day}</span>
                 <span style={{ fontSize: 11, fontWeight: 500, color: active ? "#8AABB5" : "#243E48", whiteSpace: "nowrap" }}>{shortType(day.type)}</span>
               </button>
             );
@@ -146,7 +147,7 @@ function GenerationViewer({ generation, platforms, onClose }: {
         {currentDay && (
           <>
             <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 14 }}>
-              <span style={{ fontSize: 14, fontWeight: 600, color: "#EDF2F4", letterSpacing: -0.3 }}>Day {currentDay.day}</span>
+              <span style={{ fontSize: 14, fontWeight: 500, color: "#EDF2F4", letterSpacing: -0.3 }}>Day {currentDay.day}</span>
               <span style={{ fontSize: 12, fontWeight: 500, color: "#2E4A55" }}>{currentDay.type}</span>
             </div>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-start" }}>
@@ -159,9 +160,9 @@ function GenerationViewer({ generation, platforms, onClose }: {
 
             {/* Prev / Next */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 20 }}>
-              <button onClick={() => setActiveDay(d => Math.max(1, d - 1))} disabled={activeDay === 1} style={{ fontSize: 12, fontWeight: 500, color: activeDay === 1 ? "#1E2E33" : "#3D5A62", background: "none", border: "none", cursor: activeDay === 1 ? "default" : "pointer", transition: "color 0.13s" }} onMouseEnter={e => { if (activeDay !== 1) e.currentTarget.style.color = "#8AABB5"; }} onMouseLeave={e => { if (activeDay !== 1) e.currentTarget.style.color = "#3D5A62"; }}>← Previous day</button>
-              <span style={{ fontSize: 11, color: "#1E2E33", fontWeight: 600 }}>{activeDay} / {totalDays}</span>
-              <button onClick={() => setActiveDay(d => Math.min(totalDays, d + 1))} disabled={activeDay === totalDays} style={{ fontSize: 12, fontWeight: 500, color: activeDay === totalDays ? "#1E2E33" : "#3D5A62", background: "none", border: "none", cursor: activeDay === totalDays ? "default" : "pointer", transition: "color 0.13s" }} onMouseEnter={e => { if (activeDay !== totalDays) e.currentTarget.style.color = "#8AABB5"; }} onMouseLeave={e => { if (activeDay !== totalDays) e.currentTarget.style.color = "#3D5A62"; }}>Next day →</button>
+              <button onClick={() => setActiveDay(d => Math.max(1, d - 1))} disabled={activeDay === 1} style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 500, color: activeDay === 1 ? "#1E2E33" : "#3D5A62", background: "none", border: "none", cursor: activeDay === 1 ? "default" : "pointer", transition: "color 0.13s" }} onMouseEnter={e => { if (activeDay !== 1) e.currentTarget.style.color = "#8AABB5"; }} onMouseLeave={e => { if (activeDay !== 1) e.currentTarget.style.color = "#3D5A62"; }}><ChevronLeft size={13} /> Previous day</button>
+              <span style={{ fontSize: 11, color: "#1E2E33", fontWeight: 500 }}>{activeDay} / {totalDays}</span>
+              <button onClick={() => setActiveDay(d => Math.min(totalDays, d + 1))} disabled={activeDay === totalDays} style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 500, color: activeDay === totalDays ? "#1E2E33" : "#3D5A62", background: "none", border: "none", cursor: activeDay === totalDays ? "default" : "pointer", transition: "color 0.13s" }} onMouseEnter={e => { if (activeDay !== totalDays) e.currentTarget.style.color = "#8AABB5"; }} onMouseLeave={e => { if (activeDay !== totalDays) e.currentTarget.style.color = "#3D5A62"; }}>Next day <ChevronRight size={13} /></button>
             </div>
           </>
         )}
@@ -214,32 +215,30 @@ export function HistoryClient() {
     <div style={{ minHeight: "100vh", background: "#080D10", fontFamily: "'Inter', -apple-system, sans-serif", color: "#F0F4F5" }}>
 
       {/* Ambient */}
-      <div style={{ position: "fixed", inset: 0, backgroundImage: "radial-gradient(rgba(25,97,117,0.1) 1px, transparent 1px)", backgroundSize: "24px 24px", pointerEvents: "none", zIndex: 0 }} />
-      <div style={{ position: "fixed", top: -180, left: "50%", transform: "translateX(-50%)", width: 900, height: 460, background: "radial-gradient(ellipse at 50% 0%, rgba(25,97,117,0.12) 0%, transparent 68%)", pointerEvents: "none", zIndex: 0 }} />
 
       {/* Nav */}
       <nav style={{ position: "sticky", top: 0, zIndex: 100, borderBottom: "1px solid rgba(255,255,255,0.05)", background: "rgba(8,13,16,0.85)", backdropFilter: "blur(20px)", padding: "0 28px", height: 54, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-            <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 26, height: 26, borderRadius: 7, objectFit: "cover", boxShadow: "0 0 12px rgba(25,97,117,0.35)" }} />
-            <span style={{ fontSize: 14, fontWeight: 600, color: "#EDF2F4", letterSpacing: -0.3 }}>Pervasively</span>
+            <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 26, height: 26, borderRadius: 7, objectFit: "cover" }} />
+            <span style={{ fontSize: 14, fontWeight: 500, color: "#EDF2F4", letterSpacing: -0.3 }}>Pervasively</span>
           </div>
           <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.07)" }} />
-          <button onClick={() => router.push("/dashboard")} style={{ fontSize: 12, fontWeight: 500, color: "#2E4A55", background: "none", border: "none", cursor: "pointer", transition: "color 0.15s", letterSpacing: -0.1 }} onMouseEnter={e => (e.currentTarget.style.color = "#8AABB5")} onMouseLeave={e => (e.currentTarget.style.color = "#2E4A55")}>
-            ← Dashboard
+          <button onClick={() => router.push("/dashboard")} style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 500, color: "#2E4A55", background: "none", border: "none", cursor: "pointer", transition: "color 0.15s", letterSpacing: -0.1 }} onMouseEnter={e => (e.currentTarget.style.color = "#8AABB5")} onMouseLeave={e => (e.currentTarget.style.color = "#2E4A55")}>
+            <ChevronLeft size={13} /> Dashboard
           </button>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(12,20,23,0.9)", border: "1px solid rgba(255,255,255,0.065)", borderRadius: 100, padding: "5px 13px" }}>
-            <div style={{ width: 6, height: 6, borderRadius: "50%", background: credits > 0 ? "#2AA5C0" : "#2E4A55", boxShadow: credits > 0 ? "0 0 6px rgba(42,165,192,0.6)" : "none" }} />
+            {/* <div style={{ width: 6, height: 6, borderRadius: "50%", background: credits > 0 ? "#2AA5C0" : "#2E4A55", boxShadow: "none" }} /> */}
             <span style={{ fontSize: 12, fontWeight: 500, color: credits > 0 ? "#C5D8DC" : "#3D5A62" }}>{credits} {credits === 1 ? "credit" : "credits"}</span>
           </div>
           <div ref={avatarRef} style={{ position: "relative" }}>
-            <button onClick={() => setAvatarOpen(o => !o)} style={{ width: 30, height: 30, borderRadius: "50%", background: "linear-gradient(135deg, #196175, #0c3340)", border: avatarOpen ? "1.5px solid rgba(42,165,192,0.7)" : "1.5px solid rgba(25,97,117,0.35)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.9)", cursor: "pointer", boxShadow: avatarOpen ? "0 0 0 3px rgba(42,165,192,0.13)" : "none", transition: "all 0.16s", outline: "none" }}>
+            <button onClick={() => setAvatarOpen(o => !o)} style={{ width: 30, height: 30, borderRadius: "50%", background: "#0e2028", border: avatarOpen ? "1.5px solid rgba(42,165,192,0.7)" : "1.5px solid rgba(25,97,117,0.35)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 500, color: "rgba(255,255,255,0.9)", cursor: "pointer", boxShadow: "none", transition: "all 0.16s", outline: "none" }}>
               {initials}
             </button>
             {avatarOpen && (
-              <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, width: 228, background: "rgba(10,16,20,0.97)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 14, overflow: "hidden", boxShadow: "0 24px 60px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.04)", backdropFilter: "blur(28px)", animation: "ddIn 0.14s cubic-bezier(0.16,1,0.3,1)" }}>
+              <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, width: 228, background: "rgba(10,16,20,0.97)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 14, overflow: "hidden", backdropFilter: "blur(28px)", animation: "ddIn 0.14s cubic-bezier(0.16,1,0.3,1)" }}>
                 <style>{`
                   @keyframes ddIn { from { opacity:0; transform:translateY(-5px) scale(0.97); } to { opacity:1; transform:none; } }
                   .hddi { display:flex; align-items:center; gap:9px; padding:9px 14px; width:100%; background:none; border:none; cursor:pointer; font-family:'Inter',-apple-system,sans-serif; font-size:13px; font-weight:450; color:#7A9EAA; text-align:left; transition:background 0.1s,color 0.1s; }
@@ -282,8 +281,8 @@ export function HistoryClient() {
 
         {/* Header */}
         <div style={{ marginBottom: 36 }}>
-          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#196175", marginBottom: 8 }}>History</p>
-          <h1 style={{ fontSize: 24, fontWeight: 600, letterSpacing: -0.7, color: "#EDF2F4", marginBottom: 6 }}>Past generations</h1>
+          {/* <p style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase", color: "#196175", marginBottom: 8 }}>History</p> */}
+          <h1 style={{ fontSize: 24, fontWeight: 500, letterSpacing: -0.7, color: "#EDF2F4", marginBottom: 6 }}>History</h1>
           <p style={{ fontSize: 14, color: "#3D5A62" }}>
             {sorted.length > 0 ? `${sorted.length} batch${sorted.length !== 1 ? "es" : ""} for ${product?.name ?? "this product"}` : "No generations yet."}
           </p>
@@ -306,14 +305,13 @@ export function HistoryClient() {
                     background: isActive ? "rgba(25,97,117,0.2)" : "rgba(255,255,255,0.03)",
                     border: isActive ? "1px solid rgba(42,165,192,0.35)" : "1px solid rgba(255,255,255,0.07)",
                     color: isActive ? "#2AA5C0" : "#3D5A62",
-                    boxShadow: isActive ? "0 0 14px rgba(42,165,192,0.1)" : "none",
                   }}
                   onMouseEnter={e => { if (!isActive) { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(42,165,192,0.2)"; (e.currentTarget as HTMLButtonElement).style.color = "#7A9EAA"; } }}
                   onMouseLeave={e => { if (!isActive) { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.07)"; (e.currentTarget as HTMLButtonElement).style.color = "#3D5A62"; } }}
                 >
                   {p.name}
                   <span style={{
-                    fontSize: 10, fontWeight: 700, letterSpacing: "0.04em",
+                    fontSize: 10, fontWeight: 500, letterSpacing: "0.04em",
                     padding: "1px 6px", borderRadius: 100,
                     background: isActive ? "rgba(42,165,192,0.18)" : "rgba(255,255,255,0.05)",
                     color: isActive ? "#2AA5C0" : "#2E4A55",
@@ -330,10 +328,10 @@ export function HistoryClient() {
             <div style={{ width: 48, height: 48, borderRadius: 14, background: "rgba(25,97,117,0.1)", border: "1px solid rgba(42,165,192,0.15)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2AA5C0" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
             </div>
-            <h2 style={{ fontSize: 15, fontWeight: 600, color: "#EDF2F4", marginBottom: 6, letterSpacing: -0.3 }}>No generations yet</h2>
+            <h2 style={{ fontSize: 15, fontWeight: 500, color: "#EDF2F4", marginBottom: 6, letterSpacing: -0.3 }}>No generations yet</h2>
             <p style={{ fontSize: 13, color: "#2E4A55", marginBottom: 20, lineHeight: 1.6 }}>Head to the dashboard to generate your first week of content.</p>
-            <button onClick={() => router.push("/generate")} style={{ fontSize: 13, fontWeight: 600, color: "#fff", background: "linear-gradient(135deg, #1a6d85, #196175)", border: "1px solid rgba(42,165,192,0.28)", borderRadius: 10, padding: "10px 22px", cursor: "pointer", boxShadow: "0 4px 16px rgba(25,97,117,0.3)" }}>
-              Generate content →
+            <button onClick={() => router.push("/generate")} style={{ display: "inline-flex", alignItems: "center", gap: 7, fontSize: 13, fontWeight: 500, color: "#fff", background: "#196175", border: "1px solid rgba(42,165,192,0.28)", borderRadius: 10, padding: "10px 22px", cursor: "pointer", boxShadow: "0 4px 16px rgba(25,97,117,0.3)" }}>
+              Generate content <MoveRight size={14} />
             </button>
           </div>
         )}
@@ -364,19 +362,19 @@ export function HistoryClient() {
                   onMouseLeave={e => { (e.currentTarget.style.borderColor = isFirst ? "rgba(42,165,192,0.18)" : "rgba(255,255,255,0.06)"); (e.currentTarget.style.background = "rgba(12,20,23,0.65)"); }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                    <div style={{ width: 38, height: 38, borderRadius: 10, background: "rgba(25,97,117,0.12)", border: "1px solid rgba(42,165,192,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    {/* <div style={{ width: 38, height: 38, borderRadius: 10, background: "rgba(25,97,117,0.12)", border: "1px solid rgba(42,165,192,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2AA5C0" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                    </div>
+                    </div> */}
                     <div>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                         <span style={{ fontSize: 13, fontWeight: 500, color: "#C5D8DC", letterSpacing: -0.1 }}>{date}</span>
-                        {isFirst && <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#2AA5C0", background: "rgba(42,165,192,0.1)", border: "1px solid rgba(42,165,192,0.2)", borderRadius: 100, padding: "2px 8px" }}>Latest</span>}
+                        {isFirst && <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: "#2AA5C0", background: "rgba(42,165,192,0.1)", border: "1px solid rgba(42,165,192,0.2)", borderRadius: 100, padding: "2px 8px" }}>Latest</span>}
                       </div>
                       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                         <span style={{ fontSize: 11.5, color: "#2E4A55" }}>{time}</span>
-                        <span style={{ fontSize: 11.5, color: "#1E2E33" }}>·</span>
+                        <span style={{ fontSize: 11.5, color: "#1E2E33" }}>/</span>
                         <span style={{ fontSize: 11.5, color: "#2E4A55" }}>{days.length} days</span>
-                        <span style={{ fontSize: 11.5, color: "#1E2E33" }}>·</span>
+                        <span style={{ fontSize: 11.5, color: "#1E2E33" }}>/</span>
                         <span style={{ fontSize: 11.5, color: "#2E4A55" }}>{totalPosts} posts</span>
                       </div>
                     </div>

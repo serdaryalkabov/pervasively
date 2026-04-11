@@ -41,21 +41,19 @@ export function FeedbackClient() {
     <div style={{ minHeight: "100vh", background: "#080D10", fontFamily: "'Inter', -apple-system, sans-serif", color: "#F0F4F5" }}>
 
       {/* Ambient */}
-      <div style={{ position: "fixed", inset: 0, backgroundImage: "radial-gradient(rgba(25,97,117,0.1) 1px, transparent 1px)", backgroundSize: "24px 24px", pointerEvents: "none", zIndex: 0 }} />
-      <div style={{ position: "fixed", top: -180, left: "50%", transform: "translateX(-50%)", width: 900, height: 460, background: "radial-gradient(ellipse at 50% 0%, rgba(25,97,117,0.12) 0%, transparent 68%)", pointerEvents: "none", zIndex: 0 }} />
 
       {/* Nav */}
       <nav style={{ position: "sticky", top: 0, zIndex: 100, borderBottom: "1px solid rgba(255,255,255,0.05)", background: "rgba(8,13,16,0.85)", backdropFilter: "blur(20px)", padding: "0 28px", height: 54, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-            <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 26, height: 26, borderRadius: 7, objectFit: "cover", boxShadow: "0 0 12px rgba(25,97,117,0.35)" }} />
-            <span style={{ fontSize: 14, fontWeight: 600, color: "#EDF2F4", letterSpacing: -0.3 }}>Pervasively</span>
+            <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 26, height: 26, borderRadius: 7, objectFit: "cover" }} />
+            <span style={{ fontSize: 14, fontWeight: 500, color: "#EDF2F4", letterSpacing: -0.3 }}>Pervasively</span>
           </div>
           <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.07)" }} />
           <button onClick={() => router.push("/dashboard")} style={{ fontSize: 12, fontWeight: 500, color: "#2E4A55", background: "none", border: "none", cursor: "pointer", transition: "color 0.15s", letterSpacing: -0.1 }}
             onMouseEnter={e => (e.currentTarget.style.color = "#8AABB5")}
             onMouseLeave={e => (e.currentTarget.style.color = "#2E4A55")}>
-            ← Dashboard
+            Dashboard
           </button>
         </div>
       </nav>
@@ -64,8 +62,8 @@ export function FeedbackClient() {
 
         {/* Header */}
         <div style={{ marginBottom: 40 }}>
-          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#196175", marginBottom: 8 }}>Feedback</p>
-          <h1 style={{ fontSize: 24, fontWeight: 600, letterSpacing: -0.7, color: "#EDF2F4", marginBottom: 6 }}>Share your thoughts</h1>
+          {/* <p style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase", color: "#196175", marginBottom: 8 }}>Feedback</p> */}
+          <h1 style={{ fontSize: 24, fontWeight: 500, letterSpacing: -0.7, color: "#EDF2F4", marginBottom: 6 }}>Feedback</h1>
           <p style={{ fontSize: 14, color: "#3D5A62", lineHeight: 1.6 }}>Help us improve Pervasively. Every bit of feedback shapes what we build next.</p>
         </div>
 
@@ -75,13 +73,13 @@ export function FeedbackClient() {
             <div style={{ width: 52, height: 52, borderRadius: 14, background: "rgba(25,97,117,0.12)", border: "1px solid rgba(42,165,192,0.2)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2AA5C0" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
-            <h2 style={{ fontSize: 18, fontWeight: 600, color: "#EDF2F4", letterSpacing: -0.4, marginBottom: 8 }}>Thank you!</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 500, color: "#EDF2F4", letterSpacing: -0.4, marginBottom: 8 }}>Thank you!</h2>
             <p style={{ fontSize: 14, color: "#3D5A62", lineHeight: 1.6, marginBottom: 28 }}>Your feedback has been received. We read every single submission.</p>
             <button
               onClick={() => router.push("/dashboard")}
-              style={{ fontSize: 13, fontWeight: 600, color: "#fff", background: "linear-gradient(135deg, #1a6d85, #196175)", border: "1px solid rgba(42,165,192,0.28)", borderRadius: 11, padding: "10px 24px", cursor: "pointer", boxShadow: "0 4px 16px rgba(25,97,117,0.3)" }}
+              style={{ fontSize: 13, fontWeight: 500, color: "#fff", background: "#196175", border: "1px solid rgba(42,165,192,0.28)", borderRadius: 11, padding: "10px 24px", cursor: "pointer" }}
             >
-              Back to dashboard →
+              Back to dashboard
             </button>
           </div>
         ) : (
@@ -90,7 +88,7 @@ export function FeedbackClient() {
 
             {/* Star rating */}
             <div style={{ marginBottom: 28 }}>
-              <label style={{ display: "block", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#2E4A55", marginBottom: 14 }}>
+              <label style={{ display: "block", fontSize: 11, fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#2E4A55", marginBottom: 14 }}>
                 How would you rate Pervasively?
               </label>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -117,7 +115,7 @@ export function FeedbackClient() {
 
             {/* Message */}
             <div style={{ marginBottom: 28 }}>
-              <label style={{ display: "block", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#2E4A55", marginBottom: 10 }}>
+              <label style={{ display: "block", fontSize: 11, fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#2E4A55", marginBottom: 10 }}>
                 Your feedback
               </label>
               <textarea
@@ -152,12 +150,11 @@ export function FeedbackClient() {
               disabled={!rating || !message.trim() || status === "sending"}
               style={{
                 width: "100%", padding: "13px 24px",
-                background: !rating || !message.trim() ? "rgba(25,97,117,0.15)" : "linear-gradient(135deg, #1a6d85, #196175)",
+                background: !rating || !message.trim() ? "rgba(25,97,117,0.15)" : "#196175",
                 border: "1px solid rgba(42,165,192,0.25)", borderRadius: 12,
                 color: !rating || !message.trim() ? "#2E4A55" : "#fff",
-                fontSize: 14, fontWeight: 600, cursor: !rating || !message.trim() ? "not-allowed" : "pointer",
+                fontSize: 14, fontWeight: 500, cursor: !rating || !message.trim() ? "not-allowed" : "pointer",
                 transition: "all 0.16s", letterSpacing: -0.1,
-                boxShadow: !rating || !message.trim() ? "none" : "0 4px 18px rgba(25,97,117,0.32), inset 0 1px 0 rgba(255,255,255,0.1)",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
               }}
             >
@@ -166,7 +163,7 @@ export function FeedbackClient() {
                   <div style={{ width: 14, height: 14, borderRadius: "50%", border: "1.5px solid rgba(255,255,255,0.2)", borderTopColor: "#fff", animation: "spin 0.7s linear infinite" }} />
                   Sending…
                 </>
-              ) : "Send feedback →"}
+              ) : "Send feedback"}
             </button>
           </div>
         )}

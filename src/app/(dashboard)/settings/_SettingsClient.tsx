@@ -1,12 +1,13 @@
 "use client";
 
 import { useUser, useClerk } from "@clerk/nextjs";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { api } from "../../../../convex/_generated/api";
+import { ChevronLeft, MoveRight } from "lucide-react";
 
-function AppNav({ credits, backLabel = "← Dashboard", onBack, user, signOut }: {
+function AppNav({ credits, backLabel = "Dashboard", onBack, user, signOut }: {
   credits: number; backLabel?: string; onBack: () => void;
   user: any; signOut: (cb: () => void) => void;
 }) {
@@ -37,32 +38,32 @@ function AppNav({ credits, backLabel = "← Dashboard", onBack, user, signOut }:
       {/* Left: logo + breadcrumb */}
       <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-          <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 26, height: 26, borderRadius: 7, objectFit: "cover", boxShadow: "0 0 12px rgba(25,97,117,0.35)" }} />
-          <span style={{ fontSize: 14, fontWeight: 600, color: "#EDF2F4", letterSpacing: -0.3 }}>Pervasively</span>
+          <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 26, height: 26, borderRadius: 7, objectFit: "cover" }} />
+          <span style={{ fontSize: 14, fontWeight: 500, color: "#EDF2F4", letterSpacing: -0.3 }}>Pervasively</span>
         </div>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.07)" }} />
-        <button onClick={onBack} style={{ fontSize: 12, fontWeight: 500, color: "#2E4A55", background: "none", border: "none", cursor: "pointer", transition: "color 0.15s", letterSpacing: -0.1 }}
+        <button onClick={onBack} style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 500, color: "#2E4A55", background: "none", border: "none", cursor: "pointer", transition: "color 0.15s", letterSpacing: -0.1 }}
           onMouseEnter={e => (e.currentTarget.style.color = "#8AABB5")}
           onMouseLeave={e => (e.currentTarget.style.color = "#2E4A55")}>
-          {backLabel}
+          <ChevronLeft size={13} />{backLabel}
         </button>
       </div>
 
       {/* Right: credits + avatar */}
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(12,20,23,0.9)", border: "1px solid rgba(255,255,255,0.065)", borderRadius: 100, padding: "5px 13px" }}>
-          <div style={{ width: 6, height: 6, borderRadius: "50%", background: credits > 0 ? "#2AA5C0" : "#2E4A55", boxShadow: credits > 0 ? "0 0 7px rgba(42,165,192,0.65)" : "none" }} />
+          {/* <div style={{ width: 6, height: 6, borderRadius: "50%", background: credits > 0 ? "#2AA5C0" : "#2E4A55", boxShadow: "none" }} /> */}
           <span style={{ fontSize: 12, fontWeight: 500, color: credits > 0 ? "#C5D8DC" : "#3D5A62", letterSpacing: -0.1 }}>{credits} {credits === 1 ? "credit" : "credits"}</span>
         </div>
 
         <div ref={ref} style={{ position: "relative" }}>
           <button onClick={() => setOpen(o => !o)} style={{
             width: 30, height: 30, borderRadius: "50%",
-            background: "linear-gradient(135deg, #196175, #0c3340)",
+            background: "#0e2028",
             border: open ? "1.5px solid rgba(42,165,192,0.7)" : "1.5px solid rgba(25,97,117,0.35)",
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.9)", cursor: "pointer",
-            boxShadow: open ? "0 0 0 3px rgba(42,165,192,0.13)" : "none",
+            fontSize: 11, fontWeight: 500, color: "rgba(255,255,255,0.9)", cursor: "pointer",
+            boxShadow: "none",
             transition: "all 0.16s", outline: "none",
           }}>{initials}</button>
 
@@ -71,7 +72,6 @@ function AppNav({ credits, backLabel = "← Dashboard", onBack, user, signOut }:
               position: "absolute", top: "calc(100% + 8px)", right: 0, width: 228,
               background: "rgba(10,16,20,0.97)", border: "1px solid rgba(255,255,255,0.08)",
               borderRadius: 14, overflow: "hidden",
-              boxShadow: "0 24px 60px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.04)",
               backdropFilter: "blur(28px)", animation: "ddIn 0.14s cubic-bezier(0.16,1,0.3,1)",
             }}>
               <style>{`
@@ -117,7 +117,7 @@ function AppNav({ credits, backLabel = "← Dashboard", onBack, user, signOut }:
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div style={{ marginBottom: 32 }}>
-      <h2 style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#2E4A55", marginBottom: 12 }}>{title}</h2>
+      <h2 style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#2E4A55", marginBottom: 12 }}>{title}</h2>
       <div style={{ background: "rgba(12,20,23,0.65)", border: "1px solid rgba(255,255,255,0.062)", borderRadius: 16, overflow: "hidden" }}>
         {children}
       </div>
@@ -163,7 +163,7 @@ function EditableRow({
               onKeyDown={e => { if (e.key === "Enter") handleSave(); if (e.key === "Escape") handleCancel(); }}
               style={{ padding: "6px 11px", background: "rgba(8,13,16,0.8)", border: "1px solid rgba(42,165,192,0.3)", borderRadius: 8, color: "#EDF2F4", fontSize: 13, outline: "none", width: 200, fontFamily: "'Inter', sans-serif" }}
             />
-            <button onClick={handleSave} disabled={saving} style={{ fontSize: 12, fontWeight: 600, color: "#fff", background: "rgba(25,97,117,0.5)", border: "1px solid rgba(42,165,192,0.3)", borderRadius: 7, padding: "6px 12px", cursor: "pointer", opacity: saving ? 0.6 : 1 }}>
+            <button onClick={handleSave} disabled={saving} style={{ fontSize: 12, fontWeight: 500, color: "#fff", background: "rgba(25,97,117,0.5)", border: "1px solid rgba(42,165,192,0.3)", borderRadius: 7, padding: "6px 12px", cursor: "pointer", opacity: saving ? 0.6 : 1 }}>
               {saving ? "Saving…" : "Save"}
             </button>
             <button onClick={handleCancel} style={{ fontSize: 12, fontWeight: 500, color: "#3D5A62", background: "none", border: "none", cursor: "pointer" }}>Cancel</button>
@@ -212,8 +212,22 @@ export function SettingsClient() {
   const products   = useQuery(api.products.getUserProducts, user ? { userId: user.id } : "skip");
   const product    = products?.[0];
   const credits    = convexUser?.credits ?? 0;
+  const updateExamplePosts = useMutation(api.users.updateExamplePosts);
+
+  const [examplePosts,    setExamplePosts]    = useState<string[]>([""]);
+  const [examplesSaving,  setExamplesSaving]  = useState(false);
+  const [examplesSaved,   setExamplesSaved]   = useState(false);
+  const [examplesError,   setExamplesError]   = useState("");
 
   const isLoading = convexUser === undefined || products === undefined;
+
+  // Seed example posts from DB once loaded
+  useEffect(() => {
+    if (convexUser?.examplePosts !== undefined) {
+      const posts = convexUser.examplePosts as string[];
+      setExamplePosts(posts.length > 0 ? posts : [""]);
+    }
+  }, [convexUser?.examplePosts]);
 
   if (isLoading) return (
     <div style={{ minHeight: "100vh", background: "#080D10", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -230,8 +244,6 @@ export function SettingsClient() {
     <div style={{ minHeight: "100vh", background: "#080D10", fontFamily: "'Inter', -apple-system, sans-serif", color: "#F0F4F5" }}>
 
       {/* Ambient */}
-      <div style={{ position: "fixed", inset: 0, backgroundImage: "radial-gradient(rgba(25,97,117,0.1) 1px, transparent 1px)", backgroundSize: "24px 24px", pointerEvents: "none", zIndex: 0 }} />
-      <div style={{ position: "fixed", top: -180, left: "50%", transform: "translateX(-50%)", width: 900, height: 460, background: "radial-gradient(ellipse at 50% 0%, rgba(25,97,117,0.12) 0%, transparent 68%)", pointerEvents: "none", zIndex: 0 }} />
 
       <AppNav credits={credits} onBack={() => router.push("/dashboard")} user={user} signOut={signOut} />
 
@@ -239,9 +251,9 @@ export function SettingsClient() {
 
         {/* Header */}
         <div style={{ marginBottom: 40 }}>
-          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#196175", marginBottom: 8 }}>Settings</p>
-          <h1 style={{ fontSize: 24, fontWeight: 600, letterSpacing: -0.7, color: "#EDF2F4", marginBottom: 6 }}>Account settings</h1>
-          <p style={{ fontSize: 14, color: "#3D5A62" }}>Manage your profile, platforms, and account.</p>
+          {/* <p style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase", color: "#196175", marginBottom: 8 }}>Settings</p> */}
+          <h1 style={{ fontSize: 24, fontWeight: 500, letterSpacing: -0.7, color: "#EDF2F4", marginBottom: 6 }}>Settings</h1>
+          {/* <p style={{ fontSize: 14, color: "#3D5A62" }}>Manage your profile, platforms, and account.</p> */}
         </div>
 
         {/* ── Account info ── */}
@@ -282,7 +294,7 @@ export function SettingsClient() {
                     <span style={{ fontSize: 13, fontWeight: 500, color: "#8AABB5" }}>{PLATFORM_LABELS[p] ?? p}</span>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#2AA5C0", boxShadow: "0 0 6px rgba(42,165,192,0.5)" }} />
+                    <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#2AA5C0" }} />
                     <span style={{ fontSize: 11, fontWeight: 500, color: "#2E4A55" }}>Active</span>
                   </div>
                 </div>
@@ -290,11 +302,11 @@ export function SettingsClient() {
               <div style={{ padding: "12px 20px", borderTop: "1px solid rgba(255,255,255,0.04)" }}>
                 <button
                   onClick={() => router.push("/edit-product")}
-                  style={{ fontSize: 12, fontWeight: 500, color: "#2AA5C0", background: "none", border: "none", cursor: "pointer", padding: 0, transition: "color 0.14s" }}
+                  style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 500, color: "#2AA5C0", background: "none", border: "none", cursor: "pointer", padding: 0, transition: "color 0.14s" }}
                   onMouseEnter={e => (e.currentTarget.style.color = "#EDF2F4")}
                   onMouseLeave={e => (e.currentTarget.style.color = "#2AA5C0")}
                 >
-                  Edit product brief →
+                  Edit product brief <MoveRight size={13} />
                 </button>
               </div>
             </>
@@ -303,6 +315,104 @@ export function SettingsClient() {
               <p style={{ fontSize: 13, color: "#2E4A55" }}>No platforms connected yet.</p>
             </div>
           )}
+        </Section>
+
+        {/* ── Voice samples ── */}
+        <Section title="Voice samples">
+          <div style={{ padding: "20px 20px 8px" }}>
+            <p style={{ fontSize: 13, color: "#3D5A62", lineHeight: 1.65, marginBottom: 20 }}>
+              Paste 1–3 real posts you've written. Pervasively studies your sentence length, word choice, and topics to mirror your voice in every generation.
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {examplePosts.map((post, i) => (
+                <div key={i}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                    <span style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.07em", textTransform: "uppercase", color: "#2E4A55" }}>
+                      Example {i + 1}
+                    </span>
+                    {examplePosts.length > 1 && (
+                      <button
+                        onClick={() => setExamplePosts(prev => prev.filter((_, idx) => idx !== i))}
+                        style={{ fontSize: 11, color: "#2E4A55", background: "none", border: "none", cursor: "pointer", padding: 0, transition: "color 0.13s" }}
+                        onMouseEnter={e => (e.currentTarget.style.color = "#E07070")}
+                        onMouseLeave={e => (e.currentTarget.style.color = "#2E4A55")}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  <textarea
+                    value={post}
+                    onChange={e => setExamplePosts(prev => { const next = [...prev]; next[i] = e.target.value; return next; })}
+                    placeholder={i === 0 ? "Paste a post you're proud of: anything from any platform..." : "Another example (optional)..."}
+                    rows={4}
+                    style={{
+                      width: "100%", padding: "11px 13px", boxSizing: "border-box",
+                      background: "rgba(8,13,16,0.6)", border: "1px solid rgba(255,255,255,0.07)",
+                      borderRadius: 10, color: "#EDF2F4", fontSize: 13, lineHeight: 1.65,
+                      fontFamily: "'Inter', sans-serif", fontWeight: 300,
+                      resize: "none", outline: "none", transition: "border-color 0.15s",
+                    }}
+                    onFocus={e => (e.currentTarget.style.borderColor = "rgba(42,165,192,0.35)")}
+                    onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)")}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {examplePosts.length < 3 && (
+              <button
+                onClick={() => setExamplePosts(prev => [...prev, ""])}
+                style={{
+                  marginTop: 10, width: "100%", padding: "10px",
+                  background: "none", border: "1px dashed rgba(255,255,255,0.08)",
+                  borderRadius: 10, fontSize: 12, color: "#2E4A55",
+                  cursor: "pointer", transition: "color 0.13s, border-color 0.13s",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.color = "#2AA5C0"; e.currentTarget.style.borderColor = "rgba(42,165,192,0.3)"; }}
+                onMouseLeave={e => { e.currentTarget.style.color = "#2E4A55"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
+              >
+                + Add another example
+              </button>
+            )}
+
+            {examplesError && (
+              <p style={{ fontSize: 12, color: "#E07070", marginTop: 10 }}>{examplesError}</p>
+            )}
+          </div>
+
+          <div style={{ padding: "14px 20px", borderTop: "1px solid rgba(255,255,255,0.04)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ fontSize: 12, color: examplesSaved ? "#2AA5C0" : "transparent", transition: "color 0.2s" }}>
+              Saved
+            </span>
+            <button
+              onClick={async () => {
+                if (!user) return;
+                setExamplesSaving(true); setExamplesError(""); setExamplesSaved(false);
+                try {
+                  await updateExamplePosts({
+                    clerkId: user.id,
+                    examplePosts: examplePosts.filter(p => p.trim()),
+                  });
+                  setExamplesSaved(true);
+                  setTimeout(() => setExamplesSaved(false), 2500);
+                } catch (e: any) {
+                  setExamplesError(e?.message ?? "Failed to save.");
+                } finally {
+                  setExamplesSaving(false);
+                }
+              }}
+              disabled={examplesSaving}
+              style={{
+                fontSize: 13, fontWeight: 500, color: "#fff",
+                background: "rgba(25,97,117,0.5)", border: "1px solid rgba(42,165,192,0.25)",
+                borderRadius: 8, padding: "8px 20px", cursor: examplesSaving ? "not-allowed" : "pointer",
+                opacity: examplesSaving ? 0.6 : 1, transition: "opacity 0.15s",
+              }}
+            >
+              {examplesSaving ? "Saving…" : "Save voice samples"}
+            </button>
+          </div>
         </Section>
 
         {/* ── Danger zone ── */}
@@ -316,7 +426,7 @@ export function SettingsClient() {
                 </div>
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  style={{ fontSize: 12, fontWeight: 600, color: "#C07070", background: "rgba(200,65,65,0.07)", border: "1px solid rgba(200,65,65,0.18)", borderRadius: 8, padding: "7px 14px", cursor: "pointer", flexShrink: 0, marginLeft: 16, transition: "all 0.14s" }}
+                  style={{ fontSize: 12, fontWeight: 500, color: "#C07070", background: "rgba(200,65,65,0.07)", border: "1px solid rgba(200,65,65,0.18)", borderRadius: 8, padding: "7px 14px", cursor: "pointer", flexShrink: 0, marginLeft: 16, transition: "all 0.14s" }}
                   onMouseEnter={e => { e.currentTarget.style.background = "rgba(200,65,65,0.13)"; (e.currentTarget.style.borderColor = "rgba(200,65,65,0.3)"); }}
                   onMouseLeave={e => { (e.currentTarget.style.background = "rgba(200,65,65,0.07)"); (e.currentTarget.style.borderColor = "rgba(200,65,65,0.18)"); }}
                 >
@@ -345,7 +455,7 @@ export function SettingsClient() {
                   <button
                     disabled={deleteInput !== "delete my account"}
                     onClick={() => signOut(() => router.replace("/"))}
-                    style={{ fontSize: 12, fontWeight: 600, color: "#fff", background: deleteInput === "delete my account" ? "rgba(200,65,65,0.75)" : "rgba(200,65,65,0.2)", border: "1px solid rgba(200,65,65,0.3)", borderRadius: 8, padding: "8px 16px", cursor: deleteInput === "delete my account" ? "pointer" : "default", transition: "background 0.14s" }}
+                    style={{ fontSize: 12, fontWeight: 500, color: "#fff", background: deleteInput === "delete my account" ? "rgba(200,65,65,0.75)" : "rgba(200,65,65,0.2)", border: "1px solid rgba(200,65,65,0.3)", borderRadius: 8, padding: "8px 16px", cursor: deleteInput === "delete my account" ? "pointer" : "default", transition: "background 0.14s" }}
                   >
                     Permanently delete
                   </button>

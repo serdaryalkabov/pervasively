@@ -34,47 +34,7 @@ export function SignUpClient() {
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [step, setStep]         = useState<"form" | "verify">("form");
   const [code, setCode]         = useState("");
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    setMounted(true);
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
-    resize();
-    window.addEventListener("resize", resize);
-    const dots: { x: number; y: number; ox: number; oy: number; v: number; phase: number }[] = [];
-    const SPACING = 52;
-    const init = () => {
-      dots.length = 0;
-      const cols = Math.ceil(canvas.width / SPACING) + 1;
-      const rows = Math.ceil(canvas.height / SPACING) + 1;
-      for (let r = 0; r < rows; r++)
-        for (let c = 0; c < cols; c++)
-          dots.push({ x: c * SPACING, y: r * SPACING, ox: c * SPACING, oy: r * SPACING, v: Math.random() * 0.4 + 0.1, phase: Math.random() * Math.PI * 2 });
-    };
-    init();
-    window.addEventListener("resize", init);
-    let t = 0, raf: number;
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      t += 0.008;
-      dots.forEach(d => {
-        d.x = d.ox + Math.sin(t * d.v + d.phase) * 3;
-        d.y = d.oy + Math.cos(t * d.v + d.phase + 1) * 3;
-        const dist = Math.hypot(d.x - canvas.width / 2, d.y - canvas.height / 2);
-        const max  = Math.hypot(canvas.width / 2, canvas.height / 2);
-        const alpha = 0.03 + (1 - dist / max) * 0.09;
-        ctx.beginPath(); ctx.arc(d.x, d.y, 1, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(25,97,117,${alpha})`; ctx.fill();
-      });
-      raf = requestAnimationFrame(draw);
-    };
-    draw();
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); window.removeEventListener("resize", init); };
-  }, []);
+  useEffect(() => { setMounted(true); }, []);
 
   const strength  = password ? requirements.filter(r => r.test(password)).length : 0;
   const isValid   = strength === 4;
@@ -117,50 +77,34 @@ export function SignUpClient() {
     borderRadius: 12,
     background: focusedField === field ? "rgba(25,97,117,0.06)" : "rgba(255,255,255,0.02)",
     transition: "all 0.2s",
-    boxShadow: focusedField === field ? "0 0 0 3px rgba(25,97,117,0.1), inset 0 1px 0 rgba(255,255,255,0.04)" : "inset 0 1px 0 rgba(255,255,255,0.03)",
   });
   const labelStyle = (field: string) => ({
-    display: "block" as const, fontSize: 10, fontWeight: 700,
+    display: "block" as const, fontSize: 10, fontWeight: 500,
     letterSpacing: "0.14em", textTransform: "uppercase" as const,
     color: focusedField === field ? "#1E7A91" : "#3D5A62",
-    marginBottom: 8, fontFamily: "'DM Sans', sans-serif", transition: "color 0.2s",
+    marginBottom: 8, fontFamily: "'Inter', -apple-system, sans-serif", transition: "color 0.2s",
   });
 
   return (
     <div className="relative min-h-screen bg-[#060A0D] flex items-center justify-center overflow-hidden py-10">
-      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" />
-      <div className="absolute inset-0 pointer-events-none">
-        <div style={{ position: "absolute", top: "30%", left: "50%", transform: "translate(-50%,-50%)", width: 700, height: 500, background: "radial-gradient(ellipse, rgba(25,97,117,0.13) 0%, transparent 70%)" }} />
-      </div>
-
-      {/* Top nav */}
-      <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-8 py-5 z-10">
-        <Link href="/" className="flex items-center gap-2.5">
-          <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 28, height: 28, borderRadius: 8, objectFit: "cover", boxShadow: "0 0 12px rgba(25,97,117,0.35)" }} />
-          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 16, color: "#F0F4F5", letterSpacing: -0.5 }}>Pervasively</span>
-        </Link>
-        <div style={{ fontSize: 12, color: "#4A6B75", fontFamily: "'DM Sans', sans-serif", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 500 }}>
-          {step === "form" ? "Create Account" : "Verify Email"}
-        </div>
-      </div>
 
       {/* Card */}
       <div className={`relative z-10 w-full max-w-md mx-4 transition-all duration-700 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
-        <div style={{ background: "linear-gradient(145deg, rgba(12,20,23,0.95) 0%, rgba(8,13,16,0.98) 100%)", border: "1px solid rgba(25,97,117,0.2)", borderRadius: 24, padding: "40px 40px 36px", boxShadow: "0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03), inset 0 1px 0 rgba(255,255,255,0.05)", backdropFilter: "blur(20px)" }}>
+        <div style={{ background: "rgba(10,16,20,0.97)", border: "1px solid rgba(25,97,117,0.2)", borderRadius: 24, padding: "40px 40px 36px", backdropFilter: "blur(20px)" }}>
 
           {step === "form" ? (
             <>
               <div style={{ marginBottom: 28 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-                  <div style={{ height: 1, flex: 1, background: "linear-gradient(90deg, transparent, rgba(25,97,117,0.4))" }} />
-                  <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.18em", color: "#1E7A91", textTransform: "uppercase", fontFamily: "'DM Sans', sans-serif" }}>Get started</span>
-                  <div style={{ height: 1, flex: 1, background: "linear-gradient(90deg, rgba(25,97,117,0.4), transparent)" }} />
+                  <div style={{ height: 1, flex: 1, background: "rgba(25,97,117,0.25)" }} />
+                  <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: "0.18em", color: "#1E7A91", textTransform: "uppercase", fontFamily: "'Inter', -apple-system, sans-serif" }}>Get started</span>
+                  <div style={{ height: 1, flex: 1, background: "rgba(25,97,117,0.25)" }} />
                 </div>
-                <h1 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 28, fontWeight: 700, color: "#F0F4F5", letterSpacing: -1, lineHeight: 1.1, marginBottom: 8 }}>
+                <h1 style={{ fontFamily: "'Inter', -apple-system, sans-serif", fontSize: 28, fontWeight: 500, color: "#F0F4F5", letterSpacing: -1, lineHeight: 1.1, marginBottom: 8 }}>
                   Be everywhere<br />
-                  <span style={{ background: "linear-gradient(135deg, #1E7A91, #4AACBF)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>pervasively</span>
+                  <span style={{ color: "#2AA5C0" }}>pervasively</span>
                 </h1>
-                <p style={{ fontSize: 13, color: "#4A6B75", fontFamily: "'DM Sans', sans-serif", lineHeight: 1.6 }}>
+                <p style={{ fontSize: 13, color: "#4A6B75", fontFamily: "'Inter', -apple-system, sans-serif", lineHeight: 1.6 }}>
                   Join solopreneurs generating a week of content in 10 minutes.
                 </p>
               </div>
@@ -171,13 +115,13 @@ export function SignUpClient() {
                   <div>
                     <label style={labelStyle("firstName")}>First name</label>
                     <div style={inputStyle("firstName")}>
-                      <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)} onFocus={() => setFocusedField("firstName")} onBlur={() => setFocusedField(null)} placeholder="Alex" required style={{ width: "100%", padding: "13px 14px", background: "transparent", border: "none", outline: "none", fontSize: 14, color: "#F0F4F5", fontFamily: "'DM Sans', sans-serif", borderRadius: 12 }} />
+                      <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)} onFocus={() => setFocusedField("firstName")} onBlur={() => setFocusedField(null)} placeholder="Alex" required style={{ width: "100%", padding: "13px 14px", background: "transparent", border: "none", outline: "none", fontSize: 14, color: "#F0F4F5", fontFamily: "'Inter', -apple-system, sans-serif", borderRadius: 12 }} />
                     </div>
                   </div>
                   <div>
                     <label style={labelStyle("lastName")}>Last name</label>
                     <div style={inputStyle("lastName")}>
-                      <input type="text" value={lastName} onChange={e => setLastName(e.target.value)} onFocus={() => setFocusedField("lastName")} onBlur={() => setFocusedField(null)} placeholder="Johnson" required style={{ width: "100%", padding: "13px 14px", background: "transparent", border: "none", outline: "none", fontSize: 14, color: "#F0F4F5", fontFamily: "'DM Sans', sans-serif", borderRadius: 12 }} />
+                      <input type="text" value={lastName} onChange={e => setLastName(e.target.value)} onFocus={() => setFocusedField("lastName")} onBlur={() => setFocusedField(null)} placeholder="Johnson" required style={{ width: "100%", padding: "13px 14px", background: "transparent", border: "none", outline: "none", fontSize: 14, color: "#F0F4F5", fontFamily: "'Inter', -apple-system, sans-serif", borderRadius: 12 }} />
                     </div>
                   </div>
                 </div>
@@ -188,7 +132,7 @@ export function SignUpClient() {
                     <div style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", opacity: 0.4 }}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E7A91" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="3" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>
                     </div>
-                    <input type="email" value={email} onChange={e => setEmail(e.target.value)} onFocus={() => setFocusedField("email")} onBlur={() => setFocusedField(null)} placeholder="you@example.com" required style={{ width: "100%", padding: "13px 14px 13px 38px", background: "transparent", border: "none", outline: "none", fontSize: 14, color: "#F0F4F5", fontFamily: "'DM Sans', sans-serif", borderRadius: 12 }} />
+                    <input type="email" value={email} onChange={e => setEmail(e.target.value)} onFocus={() => setFocusedField("email")} onBlur={() => setFocusedField(null)} placeholder="you@example.com" required style={{ width: "100%", padding: "13px 14px 13px 38px", background: "transparent", border: "none", outline: "none", fontSize: 14, color: "#F0F4F5", fontFamily: "'Inter', -apple-system, sans-serif", borderRadius: 12 }} />
                   </div>
                 </div>
 
@@ -198,7 +142,7 @@ export function SignUpClient() {
                     <div style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", opacity: 0.4 }}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E7A91" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
                     </div>
-                    <input type="password" value={password} onChange={e => setPassword(e.target.value)} onFocus={() => setFocusedField("password")} onBlur={() => setFocusedField(null)} placeholder="••••••••••••" required style={{ width: "100%", padding: "13px 14px 13px 38px", background: "transparent", border: "none", outline: "none", fontSize: 14, color: "#F0F4F5", fontFamily: "'DM Sans', sans-serif", borderRadius: 12 }} />
+                    <input type="password" value={password} onChange={e => setPassword(e.target.value)} onFocus={() => setFocusedField("password")} onBlur={() => setFocusedField(null)} placeholder="••••••••••••" required style={{ width: "100%", padding: "13px 14px 13px 38px", background: "transparent", border: "none", outline: "none", fontSize: 14, color: "#F0F4F5", fontFamily: "'Inter', -apple-system, sans-serif", borderRadius: 12 }} />
                   </div>
                   {password.length > 0 && (
                     <div style={{ marginTop: 10 }}>
@@ -209,7 +153,7 @@ export function SignUpClient() {
                         {requirements.map(r => { const met = r.test(password); return (
                           <div key={r.key} style={{ display: "flex", alignItems: "center", gap: 4, padding: "3px 8px", borderRadius: 100, border: `1px solid ${met ? "rgba(61,171,122,0.35)" : "rgba(255,255,255,0.06)"}`, background: met ? "rgba(61,171,122,0.08)" : "rgba(255,255,255,0.02)", transition: "all 0.2s" }}>
                             <div style={{ width: 5, height: 5, borderRadius: 3, background: met ? "#3DAB7A" : "#2D4A52", transition: "background 0.2s" }} />
-                            <span style={{ fontSize: 10, color: met ? "#3DAB7A" : "#2D4A52", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, letterSpacing: "0.04em" }}>{r.label}</span>
+                            <span style={{ fontSize: 10, color: met ? "#3DAB7A" : "#2D4A52", fontFamily: "'Inter', -apple-system, sans-serif", fontWeight: 500, letterSpacing: "0.04em" }}>{r.label}</span>
                           </div>
                         );})}
                       </div>
@@ -223,7 +167,7 @@ export function SignUpClient() {
                     <div style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", opacity: 0.4 }}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={mismatches ? "#E05A5A" : matches ? "#3DAB7A" : "#1E7A91"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
                     </div>
-                    <input type="password" value={passwordC} onChange={e => setPasswordC(e.target.value)} onFocus={() => setFocusedField("confirm")} onBlur={() => setFocusedField(null)} placeholder="••••••••••••" required style={{ width: "100%", padding: "13px 14px 13px 38px", background: "transparent", border: "none", outline: "none", fontSize: 14, color: "#F0F4F5", fontFamily: "'DM Sans', sans-serif", borderRadius: 12 }} />
+                    <input type="password" value={passwordC} onChange={e => setPasswordC(e.target.value)} onFocus={() => setFocusedField("confirm")} onBlur={() => setFocusedField(null)} placeholder="••••••••••••" required style={{ width: "100%", padding: "13px 14px 13px 38px", background: "transparent", border: "none", outline: "none", fontSize: 14, color: "#F0F4F5", fontFamily: "'Inter', -apple-system, sans-serif", borderRadius: 12 }} />
                     {matches && (<div style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)" }}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3DAB7A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg></div>)}
                   </div>
                 </div>
@@ -231,68 +175,64 @@ export function SignUpClient() {
                 {error && (
                   <div style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(224,90,90,0.08)", border: "1px solid rgba(224,90,90,0.2)", borderRadius: 10, padding: "10px 14px" }}>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E05A5A" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
-                    <span style={{ fontSize: 12, color: "#E05A5A", fontFamily: "'DM Sans', sans-serif" }}>{error}</span>
+                    <span style={{ fontSize: 12, color: "#E05A5A", fontFamily: "'Inter', -apple-system, sans-serif" }}>{error}</span>
                   </div>
                 )}
 
-                <button type="submit" disabled={loading || !isValid || !matches || !firstName.trim() || !lastName.trim()} style={{ marginTop: 6, padding: "14px 24px", background: loading || !isValid || !matches || !firstName.trim() || !lastName.trim() ? "rgba(25,97,117,0.3)" : "linear-gradient(135deg, #196175 0%, #1a6e82 100%)", border: "1px solid rgba(25,97,117,0.4)", borderRadius: 12, color: "#fff", fontSize: 14, fontWeight: 600, fontFamily: "'DM Sans', sans-serif", cursor: loading || !isValid || !matches || !firstName.trim() || !lastName.trim() ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, transition: "all 0.2s", boxShadow: loading || !isValid || !matches || !firstName.trim() || !lastName.trim() ? "none" : "0 4px 20px rgba(25,97,117,0.35), inset 0 1px 0 rgba(255,255,255,0.1)", letterSpacing: 0.2 }}>
+                <button type="submit" disabled={loading || !isValid || !matches || !firstName.trim() || !lastName.trim()} style={{ marginTop: 6, padding: "14px 24px", background: loading || !isValid || !matches || !firstName.trim() || !lastName.trim() ? "rgba(25,97,117,0.3)" : "#196175", border: "1px solid rgba(25,97,117,0.4)", borderRadius: 12, color: "#fff", fontSize: 14, fontWeight: 500, fontFamily: "'Inter', -apple-system, sans-serif", cursor: loading || !isValid || !matches || !firstName.trim() || !lastName.trim() ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, transition: "all 0.2s", letterSpacing: 0.2 }}>
                   {loading ? (<><div style={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.2)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />Creating account…</>) : (<>Create account<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg></>)}
                 </button>
               </form>
 
               <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "24px 0" }}>
                 <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.05)" }} />
-                <span style={{ fontSize: 11, color: "#2D4A52", fontFamily: "'DM Sans', sans-serif", letterSpacing: "0.08em" }}>HAVE AN ACCOUNT?</span>
+                <span style={{ fontSize: 11, color: "#2D4A52", fontFamily: "'Inter', -apple-system, sans-serif", letterSpacing: "0.08em" }}>Have an account?</span>
                 <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.05)" }} />
               </div>
-              <Link href="/sign-in" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "13px 24px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, color: "#6B8A92", fontSize: 14, fontWeight: 500, fontFamily: "'DM Sans', sans-serif", textDecoration: "none" }}>
+              <Link href="/sign-in" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "13px 24px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, color: "#6B8A92", fontSize: 14, fontWeight: 500, fontFamily: "'Inter', -apple-system, sans-serif", textDecoration: "none" }}>
                 Sign in instead
               </Link>
             </>
           ) : (
             <>
               <div style={{ marginBottom: 28, textAlign: "center" }}>
-                <div style={{ width: 56, height: 56, borderRadius: 16, margin: "0 auto 20px", background: "linear-gradient(135deg, rgba(25,97,117,0.2), rgba(25,97,117,0.05))", border: "1px solid rgba(25,97,117,0.3)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 24px rgba(25,97,117,0.15)" }}>
+                <div style={{ width: 56, height: 56, borderRadius: 16, margin: "0 auto 20px", background: "linear-gradient(135deg, rgba(25,97,117,0.2), rgba(25,97,117,0.05))", border: "1px solid rgba(25,97,117,0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E7A91" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="3" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>
                 </div>
-                <h1 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 24, fontWeight: 700, color: "#F0F4F5", letterSpacing: -0.8, marginBottom: 8 }}>Check your inbox</h1>
-                <p style={{ fontSize: 13, color: "#4A6B75", fontFamily: "'DM Sans', sans-serif", lineHeight: 1.6 }}>
-                  We sent a 6-digit code to<br /><span style={{ color: "#1E7A91", fontWeight: 600 }}>{email}</span>
+                <h1 style={{ fontFamily: "'Inter', -apple-system, sans-serif", fontSize: 24, fontWeight: 500, color: "#F0F4F5", letterSpacing: -0.8, marginBottom: 8 }}>Check your inbox</h1>
+                <p style={{ fontSize: 13, color: "#4A6B75", fontFamily: "'Inter', -apple-system, sans-serif", lineHeight: 1.6 }}>
+                  We sent a 6-digit code to<br /><span style={{ color: "#1E7A91", fontWeight: 500 }}>{email}</span>
                 </p>
               </div>
               <form onSubmit={handleVerify} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                 <div>
                   <label style={labelStyle("code")}>Verification code</label>
                   <div style={inputStyle("code")}>
-                    <input type="text" value={code} onChange={e => setCode(e.target.value)} onFocus={() => setFocusedField("code")} onBlur={() => setFocusedField(null)} placeholder="000000" maxLength={6} required style={{ width: "100%", padding: "16px 20px", background: "transparent", border: "none", outline: "none", fontSize: 24, color: "#F0F4F5", fontFamily: "'DM Mono','DM Sans',monospace", letterSpacing: "0.3em", textAlign: "center", borderRadius: 12 }} />
+                    <input type="text" value={code} onChange={e => setCode(e.target.value)} onFocus={() => setFocusedField("code")} onBlur={() => setFocusedField(null)} placeholder="000000" maxLength={6} required style={{ width: "100%", padding: "16px 20px", background: "transparent", border: "none", outline: "none", fontSize: 24, color: "#F0F4F5", fontFamily: "'DM Mono','Courier New',monospace", letterSpacing: "0.3em", textAlign: "center", borderRadius: 12 }} />
                   </div>
                 </div>
                 {error && (
                   <div style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(224,90,90,0.08)", border: "1px solid rgba(224,90,90,0.2)", borderRadius: 10, padding: "10px 14px" }}>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E05A5A" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
-                    <span style={{ fontSize: 12, color: "#E05A5A", fontFamily: "'DM Sans', sans-serif" }}>{error}</span>
+                    <span style={{ fontSize: 12, color: "#E05A5A", fontFamily: "'Inter', -apple-system, sans-serif" }}>{error}</span>
                   </div>
                 )}
-                <button type="submit" disabled={loading || code.length < 6} style={{ marginTop: 6, padding: "14px 24px", background: loading || code.length < 6 ? "rgba(25,97,117,0.3)" : "linear-gradient(135deg, #196175 0%, #1a6e82 100%)", border: "1px solid rgba(25,97,117,0.4)", borderRadius: 12, color: "#fff", fontSize: 14, fontWeight: 600, fontFamily: "'DM Sans', sans-serif", cursor: loading || code.length < 6 ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, transition: "all 0.2s", boxShadow: loading || code.length < 6 ? "none" : "0 4px 20px rgba(25,97,117,0.35), inset 0 1px 0 rgba(255,255,255,0.1)" }}>
-                  {loading ? (<><div style={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.2)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />Verifying…</>) : "Verify & continue →"}
+                <button type="submit" disabled={loading || code.length < 6} style={{ marginTop: 6, padding: "14px 24px", background: loading || code.length < 6 ? "rgba(25,97,117,0.3)" : "#196175", border: "1px solid rgba(25,97,117,0.4)", borderRadius: 12, color: "#fff", fontSize: 14, fontWeight: 500, fontFamily: "'Inter', -apple-system, sans-serif", cursor: loading || code.length < 6 ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, transition: "all 0.2s" }}>
+                  {loading ? (<><div style={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.2)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />Verifying…</>) : "Verify & continue"}
                 </button>
-                <button type="button" onClick={() => setStep("form")} style={{ background: "none", border: "none", color: "#3D5A62", fontSize: 12, fontFamily: "'DM Sans', sans-serif", cursor: "pointer", textAlign: "center", padding: 8 }}>← Back to sign up</button>
+                <button type="button" onClick={() => setStep("form")} style={{ background: "none", border: "none", color: "#3D5A62", fontSize: 12, fontFamily: "'Inter', -apple-system, sans-serif", cursor: "pointer", textAlign: "center", padding: 8 }}>Back to sign up</button>
               </form>
             </>
           )}
 
-          <p style={{ marginTop: 20, textAlign: "center", fontSize: 11, color: "#2D4A52", fontFamily: "'DM Sans', sans-serif", lineHeight: 1.6 }}>
+          <p style={{ marginTop: 20, textAlign: "center", fontSize: 11, color: "#2D4A52", fontFamily: "'Inter', -apple-system, sans-serif", lineHeight: 1.6 }}>
             By continuing you agree to our <span style={{ color: "#3D6B75" }}>Terms</span> and <span style={{ color: "#3D6B75" }}>Privacy Policy</span>
           </p>
         </div>
-
-        {[["top","left","24px 0 0 0","borderTop","borderLeft"],["top","right","0 24px 0 0","borderTop","borderRight"],["bottom","left","0 0 0 24px","borderBottom","borderLeft"],["bottom","right","0 0 24px 0","borderBottom","borderRight"]].map(([v,h,r,b1,b2]) => (
-          <div key={`${v}${h}`} style={{ position: "absolute", [v]: -1, [h]: -1, width: 20, height: 20, borderRadius: r, [b1]: "2px solid rgba(25,97,117,0.5)", [b2]: "2px solid rgba(25,97,117,0.5)", pointerEvents: "none" }} />
-        ))}
       </div>
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
         @keyframes spin { to { transform: rotate(360deg); } }
         input::placeholder { color: #2D4A52; }
         * { box-sizing: border-box; }

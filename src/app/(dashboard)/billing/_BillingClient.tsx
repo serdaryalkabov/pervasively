@@ -6,6 +6,7 @@ import { useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
 import { initializePaddle, Paddle } from "@paddle/paddle-js";
 import { api } from "../../../../convex/_generated/api";
+import { ChevronLeft } from "lucide-react";
 
 function NavBar({ credits, onBack }: { credits: number; onBack: () => void }) {
   return (
@@ -17,18 +18,18 @@ function NavBar({ credits, onBack }: { credits: number; onBack: () => void }) {
       display: "flex", alignItems: "center", justifyContent: "space-between",
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-        <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 26, height: 26, borderRadius: 7, objectFit: "cover", boxShadow: "0 0 12px rgba(25,97,117,0.35)" }} />
-        <span style={{ fontSize: 14, fontWeight: 600, color: "#EDF2F4", letterSpacing: -0.3 }}>Pervasively</span>
+        <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 26, height: 26, borderRadius: 7, objectFit: "cover" }} />
+        <span style={{ fontSize: 14, fontWeight: 500, color: "#EDF2F4", letterSpacing: -0.3 }}>Pervasively</span>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(12,20,23,0.9)", border: "1px solid rgba(255,255,255,0.065)", borderRadius: 100, padding: "5px 13px" }}>
-          <div style={{ width: 6, height: 6, borderRadius: "50%", background: credits > 0 ? "#2AA5C0" : "#2E4A55", boxShadow: credits > 0 ? "0 0 6px rgba(42,165,192,0.6)" : "none" }} />
+          {/* <div style={{ width: 6, height: 6, borderRadius: "50%", background: credits > 0 ? "#2AA5C0" : "#2E4A55", boxShadow: "none" }} /> */}
           <span style={{ fontSize: 12, fontWeight: 500, color: credits > 0 ? "#C5D8DC" : "#3D5A62" }}>{credits} {credits === 1 ? "credit" : "credits"}</span>
         </div>
-        <button onClick={onBack} style={{ fontSize: 12, fontWeight: 500, color: "#3D5A62", background: "none", border: "none", cursor: "pointer", transition: "color 0.15s" }}
+        <button onClick={onBack} style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 500, color: "#3D5A62", background: "none", border: "none", cursor: "pointer", transition: "color 0.15s" }}
           onMouseEnter={e => (e.currentTarget.style.color = "#8AABB5")}
           onMouseLeave={e => (e.currentTarget.style.color = "#3D5A62")}>
-          ← Dashboard
+          <ChevronLeft size={13} /> Dashboard
         </button>
       </div>
     </nav>
@@ -76,7 +77,7 @@ export function BillingPage() {
   useEffect(() => {
     async function loadPaddle() {
       const paddle = await initializePaddle({
-        environment: "production", 
+        environment: "production", // change to "production" when going live
         token: 'live_f2d8f63d45c61159c537598d192',
       });
       paddleRef.current = paddle ?? null;
@@ -117,8 +118,7 @@ export function BillingPage() {
     <div style={{ minHeight: "100vh", background: "#080D10", fontFamily: "'Inter', -apple-system, sans-serif", color: "#F0F4F5" }}>
 
       {/* Ambient */}
-      <div style={{ position: "fixed", inset: 0, backgroundImage: "radial-gradient(rgba(25,97,117,0.1) 1px, transparent 1px)", backgroundSize: "24px 24px", pointerEvents: "none", zIndex: 0 }} />
-      <div style={{ position: "fixed", top: -180, left: "50%", transform: "translateX(-50%)", width: 900, height: 460, background: "radial-gradient(ellipse at 50% 0%, rgba(25,97,117,0.12) 0%, transparent 68%)", pointerEvents: "none", zIndex: 0 }} />
+      {/* <div style={{ position: "fixed", top: -180, left: "50%", transform: "translateX(-50%)", width: 900, height: 460, background: "radial-gradient(ellipse at 50% 0%, rgba(25,97,117,0.12) 0%, transparent 68%)", pointerEvents: "none", zIndex: 0 }} /> */}
 
       <NavBar credits={credits} onBack={() => router.push("/dashboard")} />
 
@@ -126,17 +126,17 @@ export function BillingPage() {
 
         {/* Header */}
         <div style={{ marginBottom: 40 }}>
-          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#196175", marginBottom: 8 }}>Billing</p>
-          <h1 style={{ fontSize: 24, fontWeight: 600, letterSpacing: -0.7, color: "#EDF2F4", marginBottom: 6 }}>Credits & billing</h1>
+          {/* <p style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase", color: "#196175", marginBottom: 8 }}>Billing</p> */}
+          <h1 style={{ fontSize: 24, fontWeight: 500, letterSpacing: -0.7, color: "#EDF2F4", marginBottom: 6 }}>Credits & billing</h1>
           <p style={{ fontSize: 14, color: "#3D5A62" }}>Pay once, generate whenever. Credits never expire.</p>
         </div>
 
         {/* Current balance */}
         <div style={{ background: "rgba(12,20,23,0.65)", border: "1px solid rgba(255,255,255,0.062)", borderRadius: 16, padding: "20px 22px", marginBottom: 28, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
-            <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "#2E4A55", marginBottom: 6 }}>Current balance</p>
+            <p style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#2E4A55", marginBottom: 6 }}>Current balance</p>
             <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-              <span style={{ fontSize: 32, fontWeight: 600, color: "#EDF2F4", letterSpacing: -1 }}>{credits}</span>
+              <span style={{ fontSize: 32, fontWeight: 500, color: "#EDF2F4", letterSpacing: -1 }}>{credits}</span>
               <span style={{ fontSize: 14, color: "#3D5A62", fontWeight: 500 }}>{credits === 1 ? "credit" : "credits"}</span>
             </div>
           </div>
@@ -149,7 +149,7 @@ export function BillingPage() {
         </div>
 
         {/* Credit packs */}
-        <h2 style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#2E4A55", marginBottom: 14 }}>Credit packs</h2>
+        <h2 style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#2E4A55", marginBottom: 14 }}>Credit packs</h2>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 20 }}>
           {PACKS.map(pack => (
@@ -158,22 +158,21 @@ export function BillingPage() {
               border: pack.featured ? "1px solid rgba(42,165,192,0.28)" : "1px solid rgba(255,255,255,0.062)",
               borderRadius: 16, padding: "20px 18px",
               position: "relative", overflow: "hidden",
-              boxShadow: pack.featured ? "0 0 32px rgba(25,97,117,0.1)" : "none",
             }}>
               {pack.featured && (
-                <div style={{ position: "absolute", top: -1, left: "50%", transform: "translateX(-50%)", background: "linear-gradient(90deg, #196175, #2AA5C0)", color: "#fff", fontSize: 7, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", padding: "3px 12px", borderRadius: "0 0 8px 8px" }}>
+                <div style={{ position: "absolute", top: -1, left: "50%", transform: "translateX(-50%)", background: "linear-gradient(90deg, #196175, #2AA5C0)", color: "#fff", fontSize: 7, fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", padding: "3px 12px", borderRadius: "0 0 8px 8px" }}>
                   Most popular
                 </div>
               )}
               {pack.featured && <div style={{ position: "absolute", top: -50, right: -50, width: 160, height: 160, background: "radial-gradient(circle, rgba(42,165,192,0.07) 0%, transparent 70%)", pointerEvents: "none" }} />}
 
-              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#2AA5C0", marginBottom: 10, marginTop: pack.featured ? 10 : 0 }}>{pack.name}</p>
+              <p style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", color: "#2AA5C0", marginBottom: 10, marginTop: pack.featured ? 10 : 0 }}>{pack.name}</p>
               <div style={{ display: "flex", alignItems: "baseline", gap: 3, marginBottom: 4 }}>
-                <span style={{ fontSize: 13, fontWeight: 600, color: "#3D5A62" }}>$</span>
-                <span style={{ fontSize: 30, fontWeight: 700, color: "#EDF2F4", letterSpacing: -1, lineHeight: 1 }}>{pack.price}</span>
+                <span style={{ fontSize: 13, fontWeight: 500, color: "#3D5A62" }}>$</span>
+                <span style={{ fontSize: 30, fontWeight: 500, color: "#EDF2F4", letterSpacing: -1, lineHeight: 1 }}>{pack.price}</span>
               </div>
               <p style={{ fontSize: 12, color: "#3D5A62", marginBottom: 12 }}>
-                <span style={{ color: "#8AABB5", fontWeight: 500 }}>{pack.credits} credits</span> · ${pack.perCredit}/credit
+                <span style={{ color: "#8AABB5", fontWeight: 500 }}>{pack.credits} credits</span>, ${pack.perCredit}/credit
               </p>
               <p style={{ fontSize: 11.5, color: "#2E4A55", marginBottom: 16 }}>{pack.desc}</p>
               <button
@@ -185,7 +184,7 @@ export function BillingPage() {
                   border: pack.featured ? "1px solid rgba(42,165,192,0.35)" : "1px solid rgba(255,255,255,0.10)",
                   borderRadius: 10,
                   color: pack.featured ? "#2AA5C0" : "#8AABB5",
-                  fontSize: 12, fontWeight: 600,
+                  fontSize: 12, fontWeight: 500,
                   cursor: loadingPack === pack.name ? "wait" : "pointer",
                   letterSpacing: -0.1,
                   transition: "background 0.15s, border-color 0.15s",
@@ -206,7 +205,7 @@ export function BillingPage() {
         </div>
 
         <p style={{ fontSize: 12, color: "#2E4A55", textAlign: "center" }}>
-          1 credit = 7 days × 3 platforms = 21 posts · Credits never expire
+          1 credit = 7 days across 3 platforms = 21 posts. Credits never expire.
         </p>
 
       </main>

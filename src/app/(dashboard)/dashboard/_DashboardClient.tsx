@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { api } from "../../../../convex/_generated/api";
 import { useUser, useClerk } from "@clerk/nextjs";
+import { MoveRight } from "lucide-react";
 
 function PlatformIcon({ p }: { p: string }) {
   if (p === "twitter")
@@ -82,11 +83,7 @@ export function DashboardClient() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#080D10", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", color: "#F0F4F5", overflowX: "hidden" }}>
-
-      {/* ambient glow */}
-      <div style={{ position: "fixed", top: -160, left: "50%", transform: "translateX(-50%)", width: 900, height: 420, background: "radial-gradient(ellipse at 50% 0%, rgba(25,97,117,0.13) 0%, transparent 68%)", pointerEvents: "none", zIndex: 0 }} />
       {/* dot grid */}
-      <div style={{ position: "fixed", inset: 0, backgroundImage: "radial-gradient(rgba(25,97,117,0.11) 1px, transparent 1px)", backgroundSize: "24px 24px", pointerEvents: "none", zIndex: 0 }} />
 
       {/* ── NAV ── */}
       <nav style={{
@@ -102,9 +99,9 @@ export function DashboardClient() {
           <img
             src="/pervasively.jpg"
             alt="Pervasively"
-            style={{ width: 26, height: 26, borderRadius: 7, objectFit: "cover", boxShadow: "0 0 14px rgba(25,97,117,0.35)" }}
+            style={{ width: 26, height: 26, borderRadius: 7, objectFit: "cover" }}
           />
-          <span style={{ fontSize: 14, fontWeight: 600, color: "#EDF2F4", letterSpacing: -0.3 }}>Pervasively</span>
+          <span style={{ fontSize: 14, fontWeight: 500, color: "#EDF2F4", letterSpacing: -0.3 }}>Pervasively</span>
         </div>
 
         {/* Right */}
@@ -115,11 +112,11 @@ export function DashboardClient() {
             background: "rgba(12,20,23,0.85)", border: "1px solid rgba(255,255,255,0.065)",
             borderRadius: 100, padding: "5px 13px",
           }}>
-            <div style={{
+            {/* <div style={{
               width: 6, height: 6, borderRadius: "50%",
               background: credits > 0 ? "#2AA5C0" : "#2E4A55",
-              boxShadow: credits > 0 ? "0 0 7px rgba(42,165,192,0.65)" : "none",
-            }} />
+              boxShadow: "none",
+            }} /> */}
             <span style={{ fontSize: 12, fontWeight: 500, color: credits > 0 ? "#C5D8DC" : "#3D5A62", letterSpacing: -0.1 }}>
               {credits} {credits === 1 ? "credit" : "credits"}
             </span>
@@ -131,11 +128,11 @@ export function DashboardClient() {
               onClick={() => setDropdownOpen(o => !o)}
               style={{
                 width: 30, height: 30, borderRadius: "50%",
-                background: "linear-gradient(135deg, #196175, #0c3340)",
+                background: "#0e2028",
                 border: dropdownOpen ? "1.5px solid rgba(42,165,192,0.7)" : "1.5px solid rgba(25,97,117,0.35)",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.9)", cursor: "pointer",
-                boxShadow: dropdownOpen ? "0 0 0 3px rgba(42,165,192,0.13)" : "none",
+                fontSize: 11, fontWeight: 500, color: "rgba(255,255,255,0.9)", cursor: "pointer",
+                boxShadow: "none",
                 transition: "all 0.16s ease", outline: "none",
               }}
             >
@@ -148,7 +145,7 @@ export function DashboardClient() {
                 background: "rgba(10,16,20,0.97)",
                 border: "1px solid rgba(255,255,255,0.08)",
                 borderRadius: 14, overflow: "hidden",
-                boxShadow: "0 24px 60px rgba(0,0,0,0.65), 0 0 0 1px rgba(25,97,117,0.1), inset 0 1px 0 rgba(255,255,255,0.04)",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.45)",
                 backdropFilter: "blur(28px)", WebkitBackdropFilter: "blur(28px)",
                 animation: "ddIn 0.14s cubic-bezier(0.16,1,0.3,1)",
               }}>
@@ -204,7 +201,7 @@ export function DashboardClient() {
 
         {/* Greeting */}
         <div style={{ marginBottom: 36 }}>
-          <h1 style={{ fontSize: 26, fontWeight: 600, letterSpacing: -0.7, color: "#EDF2F4", lineHeight: 1.25, marginBottom: 7 }}>
+          <h1 style={{ fontSize: 26, fontWeight: 500, letterSpacing: -0.7, color: "#EDF2F4", lineHeight: 1.25, marginBottom: 7 }}>
             {user?.firstName ? `${user.firstName}'s workspace` : "Your workspace"}
           </h1>
           <p style={{ fontSize: 14, color: "#3D5A62", lineHeight: 1.6, fontWeight: 400 }}>
@@ -219,10 +216,8 @@ export function DashboardClient() {
           borderRadius: 18, padding: "22px 22px 20px",
           marginBottom: 12,
           backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-          boxShadow: "0 1px 0 rgba(255,255,255,0.04) inset, 0 8px 40px rgba(0,0,0,0.22)",
           position: "relative", overflow: "hidden",
         }}>
-          <div style={{ position: "absolute", top: -50, left: -50, width: 180, height: 180, background: "radial-gradient(circle, rgba(25,97,117,0.09) 0%, transparent 70%)", pointerEvents: "none" }} />
 
           {/* Product switcher */}
           {products && products.length > 0 && (
@@ -239,7 +234,6 @@ export function DashboardClient() {
                       background: isActive ? "rgba(25,97,117,0.25)" : "rgba(255,255,255,0.03)",
                       border: isActive ? "1px solid rgba(42,165,192,0.35)" : "1px solid rgba(255,255,255,0.07)",
                       color: isActive ? "#2AA5C0" : "#3D5A62",
-                      boxShadow: isActive ? "0 0 12px rgba(42,165,192,0.1)" : "none",
                     }}
                     onMouseEnter={e => { if (!isActive) { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(42,165,192,0.2)"; (e.currentTarget as HTMLButtonElement).style.color = "#7A9EAA"; } }}
                     onMouseLeave={e => { if (!isActive) { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.07)"; (e.currentTarget as HTMLButtonElement).style.color = "#3D5A62"; } }}
@@ -270,11 +264,10 @@ export function DashboardClient() {
             <div style={{ display: "flex", alignItems: "center", gap: 13 }}>
               <div style={{
                 width: 40, height: 40, borderRadius: 11,
-                background: "linear-gradient(135deg, rgba(25,97,117,0.3) 0%, rgba(8,22,28,0.6) 100%)",
+                background: "rgba(25,97,117,0.15)",
                 border: "1px solid rgba(42,165,192,0.18)",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 flexShrink: 0,
-                boxShadow: "0 0 18px rgba(25,97,117,0.18)",
               }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(42,165,192,0.8)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="3" width="18" height="18" rx="3"/>
@@ -283,8 +276,8 @@ export function DashboardClient() {
                 </svg>
               </div>
               <div>
-                <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "#2E4A55", marginBottom: 4 }}>Your product</p>
-                <h2 style={{ fontSize: 16, fontWeight: 600, color: "#EDF2F4", letterSpacing: -0.35, lineHeight: 1.2 }}>{product.name}</h2>
+                <p style={{ fontSize: 10, fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#2E4A55", marginBottom: 4 }}>Your product</p>
+                <h2 style={{ fontSize: 16, fontWeight: 500, color: "#EDF2F4", letterSpacing: -0.35, lineHeight: 1.2 }}>{product.name}</h2>
                 {product.tagline && (
                   <p style={{ fontSize: 12.5, color: "#3D5A62", marginTop: 3, lineHeight: 1.5 }}>{product.tagline}</p>
                 )}
@@ -332,7 +325,7 @@ export function DashboardClient() {
                 border: "1px solid rgba(255,255,255,0.048)",
                 borderRadius: 11, padding: "13px 14px",
               }}>
-                <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "#243E48", marginBottom: 7 }}>{label}</p>
+                <p style={{ fontSize: 10, fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "#243E48", marginBottom: 7 }}>{label}</p>
                 <p style={{ fontSize: 13, color: "#7A9EAA", lineHeight: 1.65, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{value}</p>
               </div>
             ))}
@@ -341,22 +334,17 @@ export function DashboardClient() {
 
         {/* ── Generate CTA ── */}
         <div style={{
-          background: credits > 0
-            ? "linear-gradient(135deg, rgba(22,86,104,0.2) 0%, rgba(12,20,23,0.65) 60%)"
-            : "rgba(12,20,23,0.55)",
+          background: "rgba(12,20,23,0.55)",
           border: credits > 0 ? "1px solid rgba(42,165,192,0.2)" : "1px solid rgba(255,255,255,0.052)",
           borderRadius: 18, padding: "26px 26px",
           display: "flex", alignItems: "center", justifyContent: "space-between", gap: 20,
           backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-          boxShadow: credits > 0 ? "0 0 50px rgba(25,97,117,0.09)" : "none",
+          boxShadow: "none",
           position: "relative", overflow: "hidden",
           flexWrap: "wrap", marginBottom: 12,
         }}>
-          {credits > 0 && (
-            <div style={{ position: "absolute", top: -30, right: -30, width: 180, height: 180, background: "radial-gradient(circle, rgba(42,165,192,0.07) 0%, transparent 70%)", pointerEvents: "none" }} />
-          )}
-          <div style={{ position: "relative" }}>
-            <h3 style={{ fontSize: 16, fontWeight: 600, color: "#EDF2F4", letterSpacing: -0.4, marginBottom: 5, lineHeight: 1.3 }}>
+          {credits > 0 && (<div style={{ position: "relative" }}>
+            <h3 style={{ fontSize: 16, fontWeight: 500, color: "#EDF2F4", letterSpacing: -0.4, marginBottom: 5, lineHeight: 1.3 }}>
               {credits > 0 ? "Generate this week's posts" : "No credits remaining"}
             </h3>
             <p style={{ fontSize: 13, color: "#3D5A62", lineHeight: 1.6 }}>
@@ -364,31 +352,28 @@ export function DashboardClient() {
                 ? "Produces a full batch for all connected platforms. Uses 1 credit."
                 : "Add credits to keep your content going."}
             </p>
-          </div>
+          </div>)}
+          
 
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8, flexShrink: 0 }}>
             <button
               onClick={() => router.push(credits > 0 ? `/generate?id=${product._id}` : "/billing")}
               style={{
                 padding: "11px 24px",
-                background: credits > 0
-                  ? "linear-gradient(135deg, #1a6d85 0%, #196175 100%)"
-                  : "rgba(255,255,255,0.055)",
+                background: credits > 0 ? "#196175" : "rgba(255,255,255,0.055)",
                 border: credits > 0 ? "1px solid rgba(42,165,192,0.28)" : "1px solid rgba(255,255,255,0.09)",
                 borderRadius: 11, color: credits > 0 ? "#fff" : "#4A6A75",
-                fontSize: 13, fontWeight: 600, cursor: "pointer",
+                fontSize: 13, fontWeight: 500, cursor: "pointer",
                 letterSpacing: -0.15, whiteSpace: "nowrap",
                 transition: "all 0.16s ease",
-                boxShadow: credits > 0 ? "0 4px 18px rgba(25,97,117,0.38), inset 0 1px 0 rgba(255,255,255,0.1)" : "none",
               }}
-              onMouseEnter={e => {
-                if (credits > 0) (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 26px rgba(25,97,117,0.52), inset 0 1px 0 rgba(255,255,255,0.1)";
-              }}
-              onMouseLeave={e => {
-                if (credits > 0) (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 18px rgba(25,97,117,0.38), inset 0 1px 0 rgba(255,255,255,0.1)";
-              }}
+              onMouseEnter={e => {}}
+              onMouseLeave={e => {}}
             >
-              {credits > 0 ? "Generate content →" : "Top up credits →"}
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 7 }}>
+                {credits > 0 ? "Generate content" : "Top up credits"}
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </span>
             </button>
             {credits > 0 && (
               <p style={{ fontSize: 11, color: "#243E48", letterSpacing: 0.1 }}>

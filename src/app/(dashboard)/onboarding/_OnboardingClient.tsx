@@ -5,6 +5,7 @@ import { useMutation } from "convex/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { api } from "../../../../convex/_generated/api";
+import { ArrowLeft, ArrowRight, MoveRight } from "lucide-react";
 
 type FormData = {
   name:           string;
@@ -88,8 +89,8 @@ export function OnboardingClient() {
 
       {/* Logo */}
       <div className="flex items-center gap-2.5 mb-10">
-        <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 24, height: 24, borderRadius: 6, objectFit: "cover", boxShadow: "0 0 10px rgba(25,97,117,0.35)" }} />
-        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 15, color: "#F0F4F5", letterSpacing: -0.4 }}>Pervasively</span>
+        <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 24, height: 24, borderRadius: 6, objectFit: "cover" }} />
+        <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: 15, color: "#F0F4F5", letterSpacing: -0.4 }}>Pervasively</span>
       </div>
 
       {/* Card */}
@@ -165,7 +166,7 @@ export function OnboardingClient() {
 
         {step === 6 && (
           <>
-            <StepHeader step={6} title="Show us how you write" subtitle="Paste 1–3 real posts you've written. We'll study your voice: word choice, sentence length, what you tend to talk about: and mirror it in every generation. Skip if you'd rather start fresh." />
+            <StepHeader step={6} title="Show us how you write" subtitle="Paste 1–3 real posts you've written. We'll study your voice: word choice, sentence length, what you tend to talk about — and mirror it in every generation. Skip if you'd rather start fresh." />
             <div className="space-y-4">
               {form.examplePosts.map((post, i) => (
                 <div key={i} className="relative">
@@ -197,9 +198,9 @@ export function OnboardingClient() {
         {error && <p className="mt-4 text-sm text-[#E05A5A] text-center">{error}</p>}
 
         <div className="flex items-center justify-between mt-8">
-          <button onClick={() => setStep(s => s - 1)} disabled={step === 1} className="text-sm text-[#6B8A92] hover:text-[#F0F4F5] disabled:opacity-0 transition">← Back</button>
-          <button onClick={handleNext} disabled={!canProceed() || saving} className="px-6 py-2.5 bg-[#196175] text-white text-sm font-semibold rounded-xl disabled:opacity-40 hover:bg-[#1E7A91] transition">
-            {saving ? "Saving…" : step === TOTAL_STEPS ? "Finish setup →" : "Continue →"}
+          <button onClick={() => setStep(s => s - 1)} disabled={step === 1} className="flex items-center gap-1.5 text-sm text-[#6B8A92] hover:text-[#F0F4F5] disabled:opacity-0 transition"><ArrowLeft size={14} />Back</button>
+          <button onClick={handleNext} disabled={!canProceed() || saving} className="flex items-center gap-1.5 px-6 py-2.5 bg-[#196175] text-white text-sm font-semibold rounded-xl disabled:opacity-40 hover:bg-[#1E7A91] transition">
+            {saving ? "Saving…" : step === TOTAL_STEPS ? <>Finish setup <MoveRight size={14} /></> : <>Continue <ArrowRight size={14} /></>}
           </button>
         </div>
 

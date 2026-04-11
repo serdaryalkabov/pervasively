@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useRef, useEffect, Suspense } from "react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, MoveRight } from "lucide-react";
 
 type Post = { twitter?: string; instagram?: string; linkedin?: string };
 type Day  = { day: number; type: string; posts: Post };
@@ -122,7 +123,7 @@ function PlatformCard({ platform, content }: { platform: string; content: string
           >
             {PLATFORM_ICONS[platform]}
           </div>
-          <span className="text-xs font-semibold">{PLATFORM_LABELS[platform] ?? platform}</span>
+          <span className="text-xs font-medium">{PLATFORM_LABELS[platform] ?? platform}</span>
         </div>
         <CopyButton text={content} />
       </div>
@@ -243,8 +244,6 @@ function GenerateInner() {
     <div className="min-h-screen" style={{ background: "#080D10", fontFamily: "'Inter', -apple-system, sans-serif", color: "#F0F4F5" }}>
 
       {/* Ambient + dot grid */}
-      <div className="pointer-events-none fixed inset-0 z-0" style={{ backgroundImage: "radial-gradient(rgba(25,97,117,0.1) 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
-      <div className="pointer-events-none fixed z-0" style={{ top: -180, left: "50%", transform: "translateX(-50%)", width: 900, height: 460, background: "radial-gradient(ellipse at 50% 0%, rgba(25,97,117,0.13) 0%, transparent 68%)" }} />
 
       {/* ── Nav ── */}
       <nav
@@ -254,25 +253,25 @@ function GenerateInner() {
         {/* Left: logo + breadcrumb */}
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 26, height: 26, borderRadius: 7, objectFit: "cover", boxShadow: "0 0 12px rgba(25,97,117,0.35)" }} />
-            <span className="font-semibold" style={{ fontSize: 14, letterSpacing: -0.3, color: "#EDF2F4" }}>Pervasively</span>
+            <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 26, height: 26, borderRadius: 7, objectFit: "cover" }} />
+            <span className="font-medium" style={{ fontSize: 14, letterSpacing: -0.3, color: "#EDF2F4" }}>Pervasively</span>
           </div>
           <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.07)" }} />
           <button
             onClick={() => router.push("/dashboard")}
-            className="text-xs font-medium transition"
+            className="flex items-center gap-1.5 text-xs font-medium transition"
             style={{ color: "#2E4A55", background: "none", border: "none", cursor: "pointer", letterSpacing: -0.1 }}
             onMouseEnter={e => (e.currentTarget.style.color = "#8AABB5")}
             onMouseLeave={e => (e.currentTarget.style.color = "#2E4A55")}
           >
-            ← Dashboard
+            <ChevronLeft size={13} /> Dashboard
           </button>
         </div>
 
         {/* Right: credits + avatar */}
         <div className="flex items-center gap-2.5">
           <div className="flex items-center gap-1.5 rounded-full px-3 py-1.5" style={{ background: "rgba(12,20,23,0.9)", border: "1px solid rgba(255,255,255,0.065)" }}>
-            <div className="rounded-full" style={{ width: 6, height: 6, background: credits > 0 ? "#2AA5C0" : "#2E4A55", boxShadow: credits > 0 ? "0 0 6px rgba(42,165,192,0.6)" : "none" }} />
+            {/* <div className="rounded-full" style={{ width: 6, height: 6, background: credits > 0 ? "#2AA5C0" : "#2E4A55", boxShadow: "none" }} /> */}
             <span className="text-xs font-medium" style={{ color: credits > 0 ? "#C5D8DC" : "#3D5A62" }}>
               {credits} {credits === 1 ? "credit" : "credits"}
             </span>
@@ -284,11 +283,11 @@ function GenerateInner() {
               onClick={() => setAvatarOpen(o => !o)}
               style={{
                 width: 30, height: 30, borderRadius: "50%",
-                background: "linear-gradient(135deg, #196175, #0c3340)",
+                background: "#0e2028",
                 border: avatarOpen ? "1.5px solid rgba(42,165,192,0.7)" : "1.5px solid rgba(25,97,117,0.35)",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.9)", cursor: "pointer",
-                boxShadow: avatarOpen ? "0 0 0 3px rgba(42,165,192,0.13)" : "none",
+                fontSize: 11, fontWeight: 400, color: "rgba(255,255,255,0.9)", cursor: "pointer",
+                boxShadow: "none",
                 transition: "all 0.16s", outline: "none",
               }}
             >{initials}</button>
@@ -298,7 +297,6 @@ function GenerateInner() {
                 position: "absolute", top: "calc(100% + 8px)", right: 0, width: 228,
                 background: "rgba(10,16,20,0.97)", border: "1px solid rgba(255,255,255,0.08)",
                 borderRadius: 14, overflow: "hidden",
-                boxShadow: "0 24px 60px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.04)",
                 backdropFilter: "blur(28px)", animation: "ddIn 0.14s cubic-bezier(0.16,1,0.3,1)",
               }}>
                 <style>{`
@@ -343,14 +341,14 @@ function GenerateInner() {
 
         {/* Page header */}
         <div className="mb-10">
-          <p className="text-xs font-bold uppercase mb-2" style={{ color: "#196175", letterSpacing: "0.12em" }}>Content generation</p>
-          <h1 className="font-bold tracking-tight mb-1.5" style={{ fontSize: 26, letterSpacing: -0.7, color: "#EDF2F4" }}>
-            {generated ? `${product.name} this week` : "Generate your week"}
+          {/* <p className="text-xs font-bold uppercase mb-2" style={{ color: "#196175", letterSpacing: "0.12em" }}>Content generation</p> */}
+          <h1 className="tracking-tight mb-1.5" style={{ fontWeight: 500, fontSize: 26, letterSpacing: -0.7, color: "#EDF2F4" }}>
+            {generated ? `${product.name}: this week` : "Generate your week"}
           </h1>
           <p className="text-sm" style={{ color: "#3D5A62" }}>
             {generated
-              ? `${totalDays} days · ${product.platforms.length} platform${product.platforms.length !== 1 ? "s" : ""} · ${totalDays * product.platforms.length} posts`
-              : `7 days · ${product.platforms.length} platform${product.platforms.length !== 1 ? "s" : ""} · 1 credit`}
+              ? `${totalDays} days, ${product.platforms.length} platform${product.platforms.length !== 1 ? "s" : ""}, ${totalDays * product.platforms.length} posts`
+              : `7 days, ${product.platforms.length} platform${product.platforms.length !== 1 ? "s" : ""}, 1 credit`}
           </p>
         </div>
 
@@ -360,13 +358,13 @@ function GenerateInner() {
             className="flex flex-col items-center text-center rounded-2xl p-12 mb-6 relative overflow-hidden"
             style={{ background: "rgba(12,20,23,0.65)", border: "1px solid rgba(42,165,192,0.13)" }}
           >
-            <div className="pointer-events-none absolute" style={{ top: -60, right: -60, width: 240, height: 240, background: "radial-gradient(circle, rgba(42,165,192,0.06) 0%, transparent 70%)" }} />
+            {/* <div className="pointer-events-none absolute" style={{ top: -60, right: -60, width: 240, height: 240, background: "radial-gradient(circle, rgba(42,165,192,0.06) 0%, transparent 70%)" }} /> */}
 
-            <div className="flex items-center justify-center rounded-2xl mb-5" style={{ width: 52, height: 52, background: "rgba(25,97,117,0.12)", border: "1px solid rgba(42,165,192,0.2)" }}>
+            {/* <div className="flex items-center justify-center rounded-2xl mb-5" style={{ width: 52, height: 52, background: "rgba(25,97,117,0.12)", border: "1px solid rgba(42,165,192,0.2)" }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2AA5C0" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            </div>
+            </div> */}
 
-            <h2 className="font-semibold mb-2" style={{ fontSize: 17, letterSpacing: -0.3, color: "#EDF2F4" }}>
+            <h2 className="mb-2" style={{fontWeight: 500, fontSize: 17, letterSpacing: -0.3, color: "#EDF2F4" }}>
               {credits < 1 ? "No credits remaining" : "Ready to generate"}
             </h2>
             <p className="text-sm mb-8" style={{ color: "#3D5A62", maxWidth: 360, lineHeight: 1.7 }}>
@@ -395,13 +393,12 @@ function GenerateInner() {
             <button
               onClick={credits < 1 ? () => router.push("/billing") : handleGenerate}
               disabled={generating}
-              className="flex items-center gap-2 rounded-xl font-semibold transition"
+              className="flex items-center gap-2 rounded-xl transition"
               style={{
                 padding: "12px 28px", fontSize: 13, letterSpacing: -0.1,
-                background: credits < 1 ? "rgba(255,255,255,0.04)" : "linear-gradient(135deg, #1a6d85, #196175)",
+                background: credits < 1 ? "rgba(255,255,255,0.04)" : "#196175",
                 border: credits < 1 ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(42,165,192,0.28)",
                 color: credits < 1 ? "#4A6A75" : "#fff",
-                boxShadow: credits > 0 ? "0 4px 20px rgba(25,97,117,0.3), inset 0 1px 0 rgba(255,255,255,0.1)" : "none",
                 opacity: generating ? 0.7 : 1, cursor: generating ? "wait" : "pointer",
               }}
             >
@@ -410,7 +407,7 @@ function GenerateInner() {
                   <div className="rounded-full animate-spin" style={{ width: 14, height: 14, border: "1.5px solid rgba(255,255,255,0.2)", borderTopColor: "#fff" }} />
                   Generating…
                 </>
-              ) : credits < 1 ? "Add credits →" : "Generate this week's content →"}
+              ) : credits < 1 ? <span className="flex items-center gap-2">Add credits <MoveRight size={14} /></span> : <span style={{fontWeight: 500}} className="flex items-center gap-2">Generate this week's content </span>}
             </button>
           </div>
         )}
@@ -428,7 +425,7 @@ function GenerateInner() {
             {/* Top bar */}
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
-                <div className="rounded-full" style={{ width: 7, height: 7, background: "#2AA5C0", boxShadow: "0 0 8px rgba(42,165,192,0.55)" }} />
+                <div className="rounded-full" style={{ width: 7, height: 7, background: "#2AA5C0", boxShadow: "none" }} />
                 <span className="text-xs font-medium" style={{ color: "#3D5A62" }}>
                   {totalDays * product.platforms.length} posts ready
                 </span>
@@ -441,7 +438,7 @@ function GenerateInner() {
                 onMouseEnter={e => (e.currentTarget.style.background = "rgba(42,165,192,0.13)")}
                 onMouseLeave={e => (e.currentTarget.style.background = "rgba(42,165,192,0.07)")}
               >
-                {generating ? "Generating…" : "Regenerate · 1 credit"}
+                {generating ? "Generating…" : "Regenerate — 1 credit"}
               </button>
             </div>
 
@@ -458,7 +455,7 @@ function GenerateInner() {
                       padding: "10px 16px",
                       background: active ? "rgba(25,97,117,0.18)" : "rgba(12,20,23,0.55)",
                       border:     active ? "1px solid rgba(42,165,192,0.35)" : "1px solid rgba(255,255,255,0.052)",
-                      boxShadow:  active ? "0 0 16px rgba(25,97,117,0.14)" : "none",
+                      boxShadow: "none",
                       cursor: "pointer", outline: "none",
                     }}
                   >
@@ -477,7 +474,7 @@ function GenerateInner() {
             {currentDay && (
               <>
                 <div className="flex items-baseline gap-2.5 mb-4">
-                  <span className="font-semibold" style={{ fontSize: 15, letterSpacing: -0.3, color: "#EDF2F4" }}>Day {currentDay.day}</span>
+                  <span className="font-medium" style={{ fontSize: 15, letterSpacing: -0.3, color: "#EDF2F4" }}>Day {currentDay.day}</span>
                   <span className="text-xs font-medium" style={{ color: "#2E4A55" }}>{currentDay.type}</span>
                 </div>
 
@@ -495,25 +492,25 @@ function GenerateInner() {
                   <button
                     onClick={() => setActiveDay(d => Math.max(1, d - 1))}
                     disabled={activeDay === 1}
-                    className="text-xs font-medium transition"
+                    className="flex items-center gap-1.5 text-xs font-medium transition"
                     style={{ color: activeDay === 1 ? "#1E2E33" : "#3D5A62", background: "none", border: "none", cursor: activeDay === 1 ? "default" : "pointer" }}
                     onMouseEnter={e => { if (activeDay !== 1) e.currentTarget.style.color = "#8AABB5"; }}
                     onMouseLeave={e => { if (activeDay !== 1) e.currentTarget.style.color = "#3D5A62"; }}
                   >
-                    ← Previous day
+                    <ChevronLeft size={13} /> Previous day
                   </button>
-                  <span className="text-xs font-semibold" style={{ color: "#243E48", letterSpacing: "0.05em" }}>
+                  <span className="text-xs font-medium" style={{ color: "#243E48", letterSpacing: "0.05em" }}>
                     {activeDay} / {totalDays}
                   </span>
                   <button
                     onClick={() => setActiveDay(d => Math.min(totalDays, d + 1))}
                     disabled={activeDay === totalDays}
-                    className="text-xs font-medium transition"
+                    className="flex items-center gap-1.5 text-xs font-medium transition"
                     style={{ color: activeDay === totalDays ? "#1E2E33" : "#3D5A62", background: "none", border: "none", cursor: activeDay === totalDays ? "default" : "pointer" }}
                     onMouseEnter={e => { if (activeDay !== totalDays) e.currentTarget.style.color = "#8AABB5"; }}
                     onMouseLeave={e => { if (activeDay !== totalDays) e.currentTarget.style.color = "#3D5A62"; }}
                   >
-                    Next day →
+                    Next day <ChevronRight size={13} />
                   </button>
                 </div>
               </>

@@ -38,15 +38,16 @@ function AppNav({ credits, backLabel = "Dashboard", onBack, user, signOut }: {
       {/* Left: logo + breadcrumb */}
       <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-          <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 26, height: 26, borderRadius: 7, objectFit: "cover" }} />
-          <span style={{ fontSize: 14, fontWeight: 500, color: "#EDF2F4", letterSpacing: -0.3 }}>Pervasively</span>
+        <a href="#" style={{ fontFamily: "'Manrope',sans-serif", fontSize: 19, fontWeight: 500, color: "var(--text)", textDecoration: "none", letterSpacing: -0.5 }}>Pervasive<span style={{ color: "#2AA5C0" }}>ly</span></a>
+          {/* <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 26, height: 26, borderRadius: 7, objectFit: "cover" }} />
+          <span style={{ fontSize: 14, fontWeight: 500, color: "#EDF2F4", letterSpacing: -0.3 }}>Pervasively</span> */}
         </div>
-        <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.07)" }} />
-        <button onClick={onBack} style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 500, color: "#2E4A55", background: "none", border: "none", cursor: "pointer", transition: "color 0.15s", letterSpacing: -0.1 }}
+        {/* <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.07)" }} /> */}
+        {/* <button onClick={onBack} style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 500, color: "#2E4A55", background: "none", border: "none", cursor: "pointer", transition: "color 0.15s", letterSpacing: -0.1 }}
           onMouseEnter={e => (e.currentTarget.style.color = "#8AABB5")}
           onMouseLeave={e => (e.currentTarget.style.color = "#2E4A55")}>
           <ChevronLeft size={13} />{backLabel}
-        </button>
+        </button> */}
       </div>
 
       {/* Right: credits + avatar */}

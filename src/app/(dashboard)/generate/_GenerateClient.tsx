@@ -253,11 +253,12 @@ function GenerateInner() {
         {/* Left: logo + breadcrumb */}
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 26, height: 26, borderRadius: 7, objectFit: "cover" }} />
-            <span className="font-medium" style={{ fontSize: 14, letterSpacing: -0.3, color: "#EDF2F4" }}>Pervasively</span>
+        <a href="#" style={{ fontFamily: "'Manrope',sans-serif", fontSize: 19, fontWeight: 500, color: "var(--text)", textDecoration: "none", letterSpacing: -0.5 }}>Pervasive<span style={{ color: "#2AA5C0" }}>ly</span></a>
+            {/* <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 26, height: 26, borderRadius: 7, objectFit: "cover" }} />
+            <span className="font-medium" style={{ fontSize: 14, letterSpacing: -0.3, color: "#EDF2F4" }}>Pervasively</span> */}
           </div>
           <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.07)" }} />
-          <button
+          {/* <button
             onClick={() => router.push("/dashboard")}
             className="flex items-center gap-1.5 text-xs font-medium transition"
             style={{ color: "#2E4A55", background: "none", border: "none", cursor: "pointer", letterSpacing: -0.1 }}
@@ -265,7 +266,7 @@ function GenerateInner() {
             onMouseLeave={e => (e.currentTarget.style.color = "#2E4A55")}
           >
             <ChevronLeft size={13} /> Dashboard
-          </button>
+          </button> */}
         </div>
 
         {/* Right: credits + avatar */}

@@ -1,14 +1,29 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useUser } from "@clerk/nextjs";
+import { useUser, useClerk } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
 import { initializePaddle, Paddle } from "@paddle/paddle-js";
 import { api } from "../../../../convex/_generated/api";
-import { ChevronLeft } from "lucide-react";
 
-function NavBar({ credits, onBack }: { credits: number; onBack: () => void }) {
+function NavBar({ credits, user, signOut }: { credits: number; user: any; signOut: any }) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const initials = user?.firstName?.[0]?.toUpperCase() ?? user?.emailAddresses?.[0]?.emailAddress?.[0]?.toUpperCase() ?? "?";
+  const fullName = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || "Account";
+  const email = user?.emailAddresses?.[0]?.emailAddress ?? "";
+
   return (
     <nav style={{
       position: "sticky", top: 0, zIndex: 100,
@@ -17,20 +32,77 @@ function NavBar({ credits, onBack }: { credits: number; onBack: () => void }) {
       padding: "0 28px", height: 54,
       display: "flex", alignItems: "center", justifyContent: "space-between",
     }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-        <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 26, height: 26, borderRadius: 7, objectFit: "cover" }} />
-        <span style={{ fontSize: 14, fontWeight: 500, color: "#EDF2F4", letterSpacing: -0.3 }}>Pervasively</span>
-      </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <button
+        onClick={() => router.push("/dashboard")}
+        style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
+      >
+        <span style={{ fontFamily: "'Manrope', sans-serif", fontSize: 17, fontWeight: 500, color: "#EDF2F4", letterSpacing: -0.5 }}>
+          Pervasive<span style={{ color: "#2AA5C0" }}>ly</span>
+        </span>
+      </button>
+
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(12,20,23,0.9)", border: "1px solid rgba(255,255,255,0.065)", borderRadius: 100, padding: "5px 13px" }}>
-          {/* <div style={{ width: 6, height: 6, borderRadius: "50%", background: credits > 0 ? "#2AA5C0" : "#2E4A55", boxShadow: "none" }} /> */}
           <span style={{ fontSize: 12, fontWeight: 500, color: credits > 0 ? "#C5D8DC" : "#3D5A62" }}>{credits} {credits === 1 ? "credit" : "credits"}</span>
         </div>
-        <button onClick={onBack} style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 500, color: "#3D5A62", background: "none", border: "none", cursor: "pointer", transition: "color 0.15s" }}
-          onMouseEnter={e => (e.currentTarget.style.color = "#8AABB5")}
-          onMouseLeave={e => (e.currentTarget.style.color = "#3D5A62")}>
-          <ChevronLeft size={13} /> Dashboard
-        </button>
+
+        <div ref={ref} style={{ position: "relative" }}>
+          <button
+            onClick={() => setOpen(o => !o)}
+            style={{
+              width: 30, height: 30, borderRadius: "50%",
+              background: "#0e2028",
+              border: open ? "1.5px solid rgba(42,165,192,0.7)" : "1.5px solid rgba(25,97,117,0.35)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 11, fontWeight: 500, color: "rgba(255,255,255,0.9)",
+              cursor: "pointer", outline: "none", transition: "all 0.16s ease",
+            }}
+          >{initials}</button>
+
+          {open && (
+            <div style={{
+              position: "absolute", top: "calc(100% + 8px)", right: 0, width: 228,
+              background: "rgba(10,16,20,0.97)", border: "1px solid rgba(255,255,255,0.08)",
+              borderRadius: 14, overflow: "hidden",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.45)",
+              backdropFilter: "blur(28px)",
+              animation: "ddIn 0.14s cubic-bezier(0.16,1,0.3,1)",
+            }}>
+              <style>{`
+                @keyframes ddIn { from { opacity:0; transform:translateY(-5px) scale(0.97); } to { opacity:1; transform:none; } }
+                .bddi { display:flex; align-items:center; gap:9px; padding:9px 14px; width:100%; background:none; border:none; cursor:pointer; font-family:'Inter',-apple-system,sans-serif; font-size:13px; font-weight:450; color:#7A9EAA; text-align:left; transition:background 0.1s,color 0.1s; }
+                .bddi:hover { background:rgba(255,255,255,0.04); color:#E0EAED; }
+                .bddi svg { opacity:0.5; flex-shrink:0; transition:opacity 0.1s; }
+                .bddi:hover svg { opacity:0.85; }
+                .bddi-red:hover { background:rgba(200,65,65,0.08) !important; color:#D87070 !important; }
+              `}</style>
+              <div style={{ padding: "13px 14px 11px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                <div style={{ fontSize: 13, fontWeight: 500, color: "#E0EAED", letterSpacing: -0.1, marginBottom: 2 }}>{fullName}</div>
+                <div style={{ fontSize: 11, color: "#2E4A55", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{email}</div>
+              </div>
+              <div style={{ padding: "5px 0" }}>
+                {([
+                  { label: "Dashboard",        path: "/dashboard", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg> },
+                  { label: "Generate",         path: "/generate",  icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> },
+                  { label: "History",          path: "/history",   icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> },
+                  { label: "Settings",         path: "/settings",  icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> },
+                  { label: "Feedback",         path: "/feedback",  icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> },
+                ] as { label: string; path: string; icon: React.ReactNode }[]).map(({ label, path, icon }) => (
+                  <button key={label} className="bddi" onClick={() => { router.push(path); setOpen(false); }}>
+                    {icon}{label}
+                  </button>
+                ))}
+              </div>
+              <div style={{ height: 1, background: "rgba(255,255,255,0.05)", margin: "2px 0" }} />
+              <div style={{ padding: "5px 0 7px" }}>
+                <button className="bddi bddi-red" onClick={() => signOut(() => router.replace("/sign-in"))}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                  Sign out
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </nav>
   );
@@ -66,6 +138,7 @@ const PACKS = [
 
 export function BillingPage() {
   const { user }    = useUser();
+  const { signOut } = useClerk();
   const router      = useRouter();
   const convexUser  = useQuery(api.users.getUser, user ? { clerkId: user.id } : "skip");
   const credits     = convexUser?.credits ?? 0;
@@ -120,7 +193,7 @@ export function BillingPage() {
       {/* Ambient */}
       {/* <div style={{ position: "fixed", top: -180, left: "50%", transform: "translateX(-50%)", width: 900, height: 460, background: "radial-gradient(ellipse at 50% 0%, rgba(25,97,117,0.12) 0%, transparent 68%)", pointerEvents: "none", zIndex: 0 }} /> */}
 
-      <NavBar credits={credits} onBack={() => router.push("/dashboard")} />
+      <NavBar credits={credits} user={user} signOut={signOut} />
 
       <main style={{ maxWidth: 680, margin: "0 auto", padding: "48px 24px 80px", position: "relative", zIndex: 1 }}>
 

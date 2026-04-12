@@ -108,7 +108,7 @@ function EditProductInner() {
           <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 24, height: 24, borderRadius: 6, objectFit: "cover", }} />
           <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 15, color: "#F0F4F5", letterSpacing: -0.4 }}>Pervasively</span>
         </div> */}
-        <button onClick={() => router.push("/dashboard")} style={{ display: 'flex', alignItems: 'center', fontSize: 12, fontWeight: 500, color: "#3D5A62", background: "none", border: "none", cursor: "pointer" }} onMouseEnter={e => (e.currentTarget.style.color = "#8AABB5")} onMouseLeave={e => (e.currentTarget.style.color = "#3D5A62")}><ChevronLeft style={{marginRight: 4}} size={13} /> Dashboard</button>
+        {/* <button onClick={() => router.push("/dashboard")} style={{ display: 'flex', alignItems: 'center', fontSize: 12, fontWeight: 500, color: "#3D5A62", background: "none", border: "none", cursor: "pointer" }} onMouseEnter={e => (e.currentTarget.style.color = "#8AABB5")} onMouseLeave={e => (e.currentTarget.style.color = "#3D5A62")}><ChevronLeft style={{marginRight: 4}} size={13} /> Dashboard</button> */}
       </div>
 
       {/* Card */}

@@ -28,14 +28,15 @@ export default defineSchema({
     .index("by_user_id", ["userId"]),
 
   generations: defineTable({
-    userId:      v.string(),
-    productId:   v.id("products"),
-    posts:       v.any(),
-    windowDays:  v.number(),
-    creditsUsed: v.number(),
-    createdAt:   v.number(),
+    userId:       v.string(),
+    productId:    v.id("products"),
+    posts:        v.any(),
+    windowDays:   v.number(),
+    creditsUsed:  v.number(),
+    createdAt:    v.number(),
+    angleSummary: v.optional(v.string()), // e.g. "Hot take (AI hype), Founder story (origin), Value tip (hook formulas)"
   })
-    .index("by_user_id", ["userId"])
+    .index("by_user_id",    ["userId"])
     .index("by_product_id", ["productId"]),
 
   orders: defineTable({
@@ -47,6 +48,6 @@ export default defineSchema({
     status:    v.string(),
     createdAt: v.number(),
   })
-    .index("by_user_id", ["userId"])
+    .index("by_user_id",   ["userId"])
     .index("by_stripe_id", ["stripeId"]),
 });

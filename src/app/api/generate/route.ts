@@ -6,16 +6,29 @@ const client = new Anthropic({
 });
 
 export async function POST(req: NextRequest) {
-  console.log("API KEY:", process.env.ANTHROPIC_API_KEY?.slice(0, 12));
   try {
-    const { product, examplePosts } = await req.json();
+    const { product, examplePosts, previousAngles } = await req.json();
 
-    const voiceSection = examplePosts && examplePosts.filter((p: string) => p.trim()).length > 0
-      ? `\nThe user has provided the following real posts they've written. Study them carefully to extract their natural voice — notice their sentence length, vocabulary level, what topics they gravitate toward, how they open posts, whether they use questions or statements, their use of punctuation, and any recurring patterns. Mirror this style authentically in every generated post:\n\n${examplePosts.filter((p: string) => p.trim()).map((p: string, i: number) => `[Example ${i + 1}]\n${p.trim()}`).join("\n\n")}\n`
-      : "";
+    const voiceSection =
+      examplePosts && examplePosts.filter((p: string) => p.trim()).length > 0
+        ? `\nThe user has provided the following real posts they've written. Study them carefully to extract their natural voice — notice their sentence length, vocabulary level, what topics they gravitate toward, how they open posts, whether they use questions or statements, their use of punctuation, and any recurring patterns. Mirror this style authentically in every generated post:\n\n${examplePosts
+            .filter((p: string) => p.trim())
+            .map((p: string, i: number) => `[Example ${i + 1}]\n${p.trim()}`)
+            .join("\n\n")}\n`
+        : "";
+
+    // Build the anti-repetition block from stored angle summaries
+    const historySection =
+      previousAngles && previousAngles.length > 0
+        ? `\nThis user has generated content before. Here are the angles and post types already used, from oldest to most recent week:\n${previousAngles
+            .map((summary: string, i: number) => `- Week ${i + 1}: ${summary}`)
+            .join(
+              "\n"
+            )}\n\nDo NOT repeat any of these angles, opening hooks, or post types in the same sequence. Choose fresh angles that haven't been covered yet.\n`
+        : "";
 
     const prompt = `You are a world-class social media content strategist specializing in helping solopreneur developers market their products.
-${voiceSection}
+${voiceSection}${historySection}
 Here is the product brief:
 - Name: ${product.name}
 - Tagline: ${product.tagline}
@@ -51,6 +64,7 @@ Rules:
 
 Respond ONLY with a valid JSON object in this exact structure, no markdown, no explanation:
 {
+  "angleSummary": "Hot take (angle label), Founder story (angle label), Value tip (angle label), ...",
   "days": [
     {
       "day": 1,
@@ -60,27 +74,18 @@ Respond ONLY with a valid JSON object in this exact structure, no markdown, no e
         "instagram": "post content here",
         "linkedin": "post content here"
       }
-    },
-    {
-      "day": 2,
-      "type": "Product Post",
-      "posts": {
-        "twitter": "post content here",
-        "instagram": "post content here",
-        "linkedin": "post content here"
-      }
     }
   ]
 }
 
+The "angleSummary" field must be a single comma-separated string listing each day's post type and its specific angle in parentheses — e.g. "Hot take (most devs waste money on ads), Founder story (why I quit my job), Value tip (3 hook formulas that work)". This is used to avoid repetition in future weeks, so be specific about the actual angle, not just the type name.
+
 Only include platforms from this list: ${product.platforms.join(", ")}.
 If a platform is not in the list, do not include it in the posts object.
-The array must contain exactly 7 day objects.`;
-
-    console.log("KEY AT CALL TIME:", process.env.ANTHROPIC_API_KEY?.slice(0, 15));
+The days array must contain exactly 7 day objects.`;
 
     const message = await client.messages.create({
-      model: "claude-sonnet-4-6",
+      model: "claude-sonnet-4-20250514",
       max_tokens: 8000,
       messages: [{ role: "user", content: prompt }],
     });
@@ -92,11 +97,13 @@ The array must contain exactly 7 day objects.`;
 
     const parsed = JSON.parse(raw);
 
-    return NextResponse.json({ success: true, data: parsed });
+    return NextResponse.json({
+      success: true,
+      data: parsed.days ? parsed : { days: parsed }, // handle if model omits wrapper
+      angleSummary: parsed.angleSummary ?? null,
+    });
   } catch (err: any) {
     console.error("Full error:", JSON.stringify(err?.error ?? err, null, 2));
-    console.error("Status:", err?.status);
-    console.error("Headers:", err?.headers);
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json(
       { success: false, error: message },

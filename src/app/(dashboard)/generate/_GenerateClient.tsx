@@ -9,52 +9,52 @@ import { Id } from "../../../../convex/_generated/dataModel";
 import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, MoveRight } from "lucide-react";
 
 type Post = { twitter?: string; instagram?: string; linkedin?: string };
-type Day  = { day: number; type: string; posts: Post };
+type Day = { day: number; type: string; posts: Post };
 type GeneratedData = { days: Day[] };
 
 const PLATFORM_LABELS: Record<string, string> = {
-  twitter:   "Twitter / X",
+  twitter: "Twitter / X",
   instagram: "Instagram",
-  linkedin:  "LinkedIn",
+  linkedin: "LinkedIn",
 };
 
 const PLATFORM_ICONS: Record<string, React.ReactNode> = {
   twitter: (
     <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622 5.91-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622 5.91-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
     </svg>
   ),
   instagram: (
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="2" width="20" height="20" rx="5"/>
-      <circle cx="12" cy="12" r="4"/>
-      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" strokeWidth="2.5" strokeLinecap="round"/>
+      <rect x="2" y="2" width="20" height="20" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" strokeWidth="2.5" strokeLinecap="round" />
     </svg>
   ),
   linkedin: (
     <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/>
-      <rect x="2" y="9" width="4" height="12"/>
-      <circle cx="4" cy="4" r="2"/>
+      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" />
+      <rect x="2" y="9" width="4" height="12" />
+      <circle cx="4" cy="4" r="2" />
     </svg>
   ),
 };
 
 // Normalise verbose AI type strings into short labels for the day strip
 const DAY_TYPE_SHORT: Record<string, string> = {
-  "Value Post":                       "Value",
-  "Product Post":                     "Product",
-  "Product / feature post":           "Feature",
-  "Story Post":                       "Story",
-  "Story / founder post":             "Founder",
-  "Hot Take Post":                    "Opinion",
-  "Hot take / opinion post":          "Opinion",
-  "Behind the Scenes Post":           "BTS",
-  "Behind the scenes post":           "BTS",
-  "Social Proof Post":                "Social",
-  "Social proof / milestone post":    "Milestone",
-  "CTA Post":                         "CTA",
-  "CTA / engagement post":            "CTA",
+  "Value Post": "Value",
+  "Product Post": "Product",
+  "Product / feature post": "Feature",
+  "Story Post": "Story",
+  "Story / founder post": "Founder",
+  "Hot Take Post": "Opinion",
+  "Hot take / opinion post": "Opinion",
+  "Behind the Scenes Post": "BTS",
+  "Behind the scenes post": "BTS",
+  "Social Proof Post": "Social",
+  "Social proof / milestone post": "Milestone",
+  "CTA Post": "CTA",
+  "CTA / engagement post": "CTA",
 };
 function shortType(type: string) {
   return DAY_TYPE_SHORT[type] ?? type.split(/[\s/]/)[0];
@@ -76,12 +76,12 @@ function CopyButton({ text }: { text: string }) {
     >
       {copied ? (
         <>
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
           Copied
         </>
       ) : (
         <>
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
           Copy
         </>
       )}
@@ -101,7 +101,7 @@ function splitInstagramContent(content: string): { body: string; visual: string 
 
 /* ─── Single platform card ─── */
 function PlatformCard({ platform, content }: { platform: string; content: string }) {
-  const isTwitter   = platform === "twitter";
+  const isTwitter = platform === "twitter";
   const isInstagram = platform === "instagram";
 
   const { body, visual } = isInstagram ? splitInstagramContent(content) : { body: content, visual: null };
@@ -140,8 +140,8 @@ function PlatformCard({ platform, content }: { platform: string; content: string
           style={{ background: "rgba(25,97,117,0.07)", border: "1px solid rgba(42,165,192,0.1)" }}
         >
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2AA5C0" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ marginTop: 1, flexShrink: 0, opacity: 0.6 }}>
-            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-            <circle cx="12" cy="13" r="4"/>
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+            <circle cx="12" cy="13" r="4" />
           </svg>
           <span className="text-xs leading-relaxed" style={{ color: "#3D6672", fontStyle: "italic" }}>
             {visual}
@@ -164,29 +164,35 @@ function PlatformCard({ platform, content }: { platform: string; content: string
 /* ─── Page ─── */
 function GenerateInner() {
   const { user } = useUser();
-  const router   = useRouter();
+  const router = useRouter();
   const { signOut } = useClerk();
   const [avatarOpen, setAvatarOpen] = useState(false);
 
-  const convexUser     = useQuery(api.users.getUser,            user ? { clerkId: user.id } : "skip");
-  const products       = useQuery(api.products.getUserProducts, user ? { userId: user.id } : "skip");
+  const convexUser = useQuery(api.users.getUser, user ? { clerkId: user.id } : "skip");
+  const products = useQuery(api.products.getUserProducts, user ? { userId: user.id } : "skip");
   const saveGeneration = useMutation(api.products.saveGeneration);
-  const searchParams   = useSearchParams();
-  const productId      = searchParams.get("id");
-  const product        = productId
+  
+  const searchParams = useSearchParams();
+  const productId = searchParams.get("id");
+  const product = productId
     ? products?.find((p: any) => p._id === productId) ?? products?.[0]
     : products?.[0];
+  // Fetch previous angle summaries for this product (skip until product is known)
+  const previousAngles = useQuery(
+    api.products.getRecentAngles,
+    product ? { productId: product._id, limit: 4 } : "skip"
+  );
 
   const [generating, setGenerating] = useState(false);
-  const [generated,  setGenerated]  = useState<GeneratedData | null>(null);
-  const [activeDay,  setActiveDay]  = useState(1);
-  const [error,      setError]      = useState("");
+  const [generated, setGenerated] = useState<GeneratedData | null>(null);
+  const [activeDay, setActiveDay] = useState(1);
+  const [error, setError] = useState("");
 
-  const credits    = convexUser?.credits ?? 0;
-  const initials   = user?.firstName?.[0]?.toUpperCase() ?? user?.emailAddresses?.[0]?.emailAddress?.[0]?.toUpperCase() ?? "?";
-  const fullName   = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || "Account";
-  const userEmail  = user?.emailAddresses?.[0]?.emailAddress ?? "";
-  const avatarRef  = useRef<HTMLDivElement>(null);
+  const credits = convexUser?.credits ?? 0;
+  const initials = user?.firstName?.[0]?.toUpperCase() ?? user?.emailAddresses?.[0]?.emailAddress?.[0]?.toUpperCase() ?? "?";
+  const fullName = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || "Account";
+  const userEmail = user?.emailAddresses?.[0]?.emailAddress ?? "";
+  const avatarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -195,9 +201,9 @@ function GenerateInner() {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
-  const isLoading  = !convexUser || !products;
+  const isLoading = !convexUser || !products;
   const currentDay = generated?.days.find(d => d.day === activeDay);
-  const totalDays  = generated?.days.length ?? 7;
+  const totalDays = generated?.days.length ?? 7;
 
   const handleGenerate = async () => {
     if (!user || !product || credits < 1) return;
@@ -208,7 +214,8 @@ function GenerateInner() {
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({
           product,
-          examplePosts: convexUser?.examplePosts ?? [],
+          examplePosts:   convexUser?.examplePosts ?? [],
+          previousAngles: previousAngles ?? [],        // ← anti-repetition history
         }),
       });
       const json = await res.json();
@@ -218,10 +225,11 @@ function GenerateInner() {
         return;
       }
       await saveGeneration({
-        userId:     user.id,
-        productId:  product._id as Id<"products">,
-        posts:      json.data,
-        windowDays: 7,
+        userId:       user.id,
+        productId:    product._id as Id<"products">,
+        posts:        json.data,
+        windowDays:   7,
+        angleSummary: json.angleSummary ?? undefined,  // ← store for next time
       });
       setGenerated(json.data);
       setActiveDay(1);
@@ -253,7 +261,7 @@ function GenerateInner() {
         {/* Left: logo + breadcrumb */}
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-        <a href="#" style={{ fontFamily: "'Manrope',sans-serif", fontSize: 19, fontWeight: 500, color: "var(--text)", textDecoration: "none", letterSpacing: -0.5 }}>Pervasive<span style={{ color: "#2AA5C0" }}>ly</span></a>
+            <a href="#" style={{ fontFamily: "'Manrope',sans-serif", fontSize: 19, fontWeight: 500, color: "var(--text)", textDecoration: "none", letterSpacing: -0.5 }}>Pervasive<span style={{ color: "#2AA5C0" }}>ly</span></a>
             {/* <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 26, height: 26, borderRadius: 7, objectFit: "cover" }} />
             <span className="font-medium" style={{ fontSize: 14, letterSpacing: -0.3, color: "#EDF2F4" }}>Pervasively</span> */}
           </div>
@@ -314,11 +322,11 @@ function GenerateInner() {
                 </div>
                 <div style={{ padding: "5px 0" }}>
                   {([
-                    { label: "Dashboard",        path: "/dashboard", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg> },
-                    { label: "Billing & credits", path: "/billing",   icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> },
-                    { label: "History",           path: "/history",   icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> },
-                    { label: "Settings",          path: "/settings",  icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> },
-                    { label: "Feedback",           path: "/feedback",  icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> },
+                    { label: "Dashboard", path: "/dashboard", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /></svg> },
+                    { label: "Billing & credits", path: "/billing", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" /><line x1="1" y1="10" x2="23" y2="10" /></svg> },
+                    { label: "History", path: "/history", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg> },
+                    { label: "Settings", path: "/settings", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg> },
+                    { label: "Feedback", path: "/feedback", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg> },
                   ] as { label: string; path: string; icon: React.ReactNode }[]).map(({ label, path, icon }) => (
                     <button key={label} className="gddi" onClick={() => { router.push(path); setAvatarOpen(false); }}>
                       {icon}{label}
@@ -328,7 +336,7 @@ function GenerateInner() {
                 <div style={{ height: 1, background: "rgba(255,255,255,0.05)", margin: "2px 0" }} />
                 <div style={{ padding: "5px 0 7px" }}>
                   <button className="gddi gddi-red" onClick={() => signOut(() => router.replace("/sign-in"))}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
                     Sign out
                   </button>
                 </div>
@@ -365,7 +373,7 @@ function GenerateInner() {
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2AA5C0" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
             </div> */}
 
-            <h2 className="mb-2" style={{fontWeight: 500, fontSize: 17, letterSpacing: -0.3, color: "#EDF2F4" }}>
+            <h2 className="mb-2" style={{ fontWeight: 500, fontSize: 17, letterSpacing: -0.3, color: "#EDF2F4" }}>
               {credits < 1 ? "No credits remaining" : "Ready to generate"}
             </h2>
             <p className="text-sm mb-8" style={{ color: "#3D5A62", maxWidth: 360, lineHeight: 1.7 }}>
@@ -408,7 +416,7 @@ function GenerateInner() {
                   <div className="rounded-full animate-spin" style={{ width: 14, height: 14, border: "1.5px solid rgba(255,255,255,0.2)", borderTopColor: "#fff" }} />
                   Generating…
                 </>
-              ) : credits < 1 ? <span className="flex items-center gap-2">Add credits <MoveRight size={14} /></span> : <span style={{fontWeight: 500}} className="flex items-center gap-2">Generate this week's content </span>}
+              ) : credits < 1 ? <span className="flex items-center gap-2">Add credits <MoveRight size={14} /></span> : <span style={{ fontWeight: 500 }} className="flex items-center gap-2">Generate this week's content </span>}
             </button>
           </div>
         )}
@@ -455,7 +463,7 @@ function GenerateInner() {
                     style={{
                       padding: "10px 16px",
                       background: active ? "rgba(25,97,117,0.18)" : "rgba(12,20,23,0.55)",
-                      border:     active ? "1px solid rgba(42,165,192,0.35)" : "1px solid rgba(255,255,255,0.052)",
+                      border: active ? "1px solid rgba(42,165,192,0.35)" : "1px solid rgba(255,255,255,0.052)",
                       boxShadow: "none",
                       cursor: "pointer", outline: "none",
                     }}

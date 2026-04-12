@@ -32,12 +32,35 @@ export const getUserProducts = query({
   },
 });
 
+// Returns the angleSummary strings from the last N generations for a product,
+// oldest-first so the prompt reads chronologically.
+export const getRecentAngles = query({
+  args: {
+    productId: v.id("products"),
+    limit:     v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const limit = args.limit ?? 4;
+    const recent = await ctx.db
+      .query("generations")
+      .withIndex("by_product_id", q => q.eq("productId", args.productId))
+      .order("desc")
+      .take(limit);
+
+    return recent
+      .reverse() // oldest → newest for the prompt
+      .map(g => g.angleSummary)
+      .filter((s): s is string => !!s);
+  },
+});
+
 export const saveGeneration = mutation({
   args: {
-    userId:     v.string(),
-    productId:  v.id("products"),
-    posts:      v.any(),
-    windowDays: v.number(),
+    userId:       v.string(),
+    productId:    v.id("products"),
+    posts:        v.any(),
+    windowDays:   v.number(),
+    angleSummary: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const user = await ctx.db
@@ -53,12 +76,13 @@ export const saveGeneration = mutation({
     });
 
     return await ctx.db.insert("generations", {
-      userId:      args.userId,
-      productId:   args.productId,
-      posts:       args.posts,
-      windowDays:  args.windowDays,
-      creditsUsed: 1,
-      createdAt:   Date.now(),
+      userId:       args.userId,
+      productId:    args.productId,
+      posts:        args.posts,
+      windowDays:   args.windowDays,
+      creditsUsed:  1,
+      createdAt:    Date.now(),
+      angleSummary: args.angleSummary,
     });
   },
 });

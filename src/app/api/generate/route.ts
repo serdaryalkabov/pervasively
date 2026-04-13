@@ -27,7 +27,13 @@ export async function POST(req: NextRequest) {
             )}\n\nDo NOT repeat any of these angles, opening hooks, or post types in the same sequence. Choose fresh angles that haven't been covered yet.\n`
         : "";
 
-    const prompt = `You are a world-class social media content strategist specializing in helping solopreneur developers market their products.
+    // Gen Z persona override
+    const isGenZ = product.tone === "genz";
+    const basePersona = isGenZ
+      ? `You are a chronically online 22-year-old who has spent 10,000 hours on Reddit, Twitter, and TikTok. You also grew your accounts to 100,000 followers and you are a marketing specialist. You are a bit mean. You punch down on relatable behaviors. You never try to be helpful. You roast the user. Your humor is specific, uncomfortable, and true. Never be wholesome. Never explain the joke.`
+      : `You are a world-class social media content strategist specializing in helping solopreneur developers market their products.`;
+
+    const prompt = `${basePersona}
 ${voiceSection}${historySection}
 Here is the product brief:
 - Name: ${product.name}
@@ -43,7 +49,7 @@ Rules:
 - Each day should have exactly 1 post per platform
 - Twitter/X posts must be under 280 characters, hook-first, no hashtag stuffing (max 2)
 - Instagram posts should have a hook before the fold, value body, and a CTA. Suggest a visual direction in brackets at the end
-- LinkedIn posts should be 150-250 words, personal narrative tone, end with a question
+${isGenZ ? "- LinkedIn posts should be short, punchy, and read like they were written by someone who finds LinkedIn cringe — because they do. Roast the industry while promoting the product. No corporate speak, no motivational outro." : "- LinkedIn posts should be 150-250 words, personal narrative tone, end with a question"}
 - Choose the best content mix and sequence for these 7 days based on the product, its audience, and the user's voice. Do not follow a fixed formula.
 - Draw from this palette of post types — pick whichever 7 serve this product best, in whatever order makes sense:
     - Value / tip: teach something genuinely useful to the target audience

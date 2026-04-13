@@ -22,6 +22,7 @@ const TONES = [
   { value: "professional",   label: "Professional",   desc: "Polished and formal" },
   { value: "technical",      label: "Technical",      desc: "Precise, developer-focused" },
   { value: "conversational", label: "Conversational", desc: "Natural, like talking to a friend" },
+  { value: "genz",           label: "Gen Z",           desc: "Chronically online. Uncomfortably specific. Actually funny." },
 ];
 
 const PLATFORMS = [

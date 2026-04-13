@@ -67,6 +67,7 @@ ${isGenZ ? "- LinkedIn posts should be short, punchy, and read like they were wr
 - Never be generic — every post must reference the actual product and audience
 - Vary the opening lines across all 7 days — no two posts should start the same way
 - Don't make posts feel AI generated, write them in human style, don't use em-dashes
+- DON'T BE BORING. Try to make the content engaging, not like boring LinkedIn posts.
 
 Respond ONLY with a valid JSON object in this exact structure, no markdown, no explanation:
 {

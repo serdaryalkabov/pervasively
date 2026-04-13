@@ -265,7 +265,7 @@ function GenerateInner() {
             {/* <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 26, height: 26, borderRadius: 7, objectFit: "cover" }} />
             <span className="font-medium" style={{ fontSize: 14, letterSpacing: -0.3, color: "#EDF2F4" }}>Pervasively</span> */}
           </div>
-          <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.07)" }} />
+          {/* <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.07)" }} /> */}
           {/* <button
             onClick={() => router.push("/dashboard")}
             className="flex items-center gap-1.5 text-xs font-medium transition"

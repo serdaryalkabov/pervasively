@@ -36,7 +36,7 @@ function NavBar({ credits, user, signOut }: { credits: number; user: any; signOu
         onClick={() => router.push("/dashboard")}
         style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
       >
-        <span style={{ fontFamily: "'Manrope', sans-serif", fontSize: 17, fontWeight: 500, color: "#EDF2F4", letterSpacing: -0.5 }}>
+        <span style={{ fontFamily: "'Manrope', sans-serif", fontSize: 19, fontWeight: 500, color: "#EDF2F4", letterSpacing: -0.5 }}>
           Pervasive<span style={{ color: "#2AA5C0" }}>ly</span>
         </span>
       </button>

@@ -224,7 +224,7 @@ export function HistoryClient() {
             {/* <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 26, height: 26, borderRadius: 7, objectFit: "cover" }} />
             <span style={{ fontSize: 14, fontWeight: 500, color: "#EDF2F4", letterSpacing: -0.3 }}>Pervasively</span> */}
           </div>
-          <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.07)" }} />
+          {/* <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.07)" }} /> */}
           {/* <button onClick={() => router.push("/dashboard")} style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 500, color: "#2E4A55", background: "none", border: "none", cursor: "pointer", transition: "color 0.15s", letterSpacing: -0.1 }} onMouseEnter={e => (e.currentTarget.style.color = "#8AABB5")} onMouseLeave={e => (e.currentTarget.style.color = "#2E4A55")}>
             <ChevronLeft size={13} /> Dashboard
           </button> */}

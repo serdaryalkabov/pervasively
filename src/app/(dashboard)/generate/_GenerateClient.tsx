@@ -6,191 +6,200 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useRef, useEffect, Suspense } from "react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
-import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, MoveRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Trash2 } from "lucide-react";
 
 type Post = { twitter?: string; instagram?: string; linkedin?: string };
-type Day = { day: number; type: string; posts: Post };
-type GeneratedData = { days: Day[] };
+type BatchResult  = { batchIndex: number; topic: string; posts: Post };
+type SingleResult = { platform: string; topic: string; post: string };
+type GeneratedData =
+  | { mode: "single"; result: SingleResult }
+  | { mode: "batch";  batches: BatchResult[] };
+
+const T = {
+  blue:       "#4D8EFF",
+  blueDim:    "rgba(77,142,255,0.10)",
+  blueBorder: "rgba(77,142,255,0.22)",
+  bg:         "#0A0D12",
+  border:     "rgba(255,255,255,0.07)",
+  text:       "#F0F4FF",
+  muted:      "#7A8BA8",
+  muted2:     "#4A5870",
+};
 
 const PLATFORM_LABELS: Record<string, string> = {
-  twitter: "Twitter / X",
-  instagram: "Instagram",
-  linkedin: "LinkedIn",
+  twitter: "Twitter / X", instagram: "Instagram", linkedin: "LinkedIn",
 };
-
 const PLATFORM_ICONS: Record<string, React.ReactNode> = {
-  twitter: (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622 5.91-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-    </svg>
-  ),
-  instagram: (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="2" width="20" height="20" rx="5" />
-      <circle cx="12" cy="12" r="4" />
-      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" strokeWidth="2.5" strokeLinecap="round" />
-    </svg>
-  ),
-  linkedin: (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" />
-      <rect x="2" y="9" width="4" height="12" />
-      <circle cx="4" cy="4" r="2" />
-    </svg>
-  ),
+  twitter:   <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622 5.91-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>,
+  instagram: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" strokeWidth="2.5" strokeLinecap="round"/></svg>,
+  linkedin:  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>,
 };
 
-// Normalise verbose AI type strings into short labels for the day strip
-const DAY_TYPE_SHORT: Record<string, string> = {
-  "Value Post": "Value",
-  "Product Post": "Product",
-  "Product / feature post": "Feature",
-  "Story Post": "Story",
-  "Story / founder post": "Founder",
-  "Hot Take Post": "Opinion",
-  "Hot take / opinion post": "Opinion",
-  "Behind the Scenes Post": "BTS",
-  "Behind the scenes post": "BTS",
-  "Social Proof Post": "Social",
-  "Social proof / milestone post": "Milestone",
-  "CTA Post": "CTA",
-  "CTA / engagement post": "CTA",
-};
-function shortType(type: string) {
-  return DAY_TYPE_SHORT[type] ?? type.split(/[\s/]/)[0];
-}
+const POST_TYPES = [
+  "Value / tip",
+  "Product / feature",
+  "Founder / story",
+  "Hot take / opinion",
+  "Behind the scenes",
+  "Social proof / milestone",
+  "Problem / pain",
+  "CTA / engagement",
+];
 
-/* ─── Copy button ─── */
+const NAV_ITEMS = [
+  { label: "Dashboard",        path: "/dashboard", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg> },
+  { label: "Billing & credits", path: "/billing",   icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> },
+  { label: "History",           path: "/history",   icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> },
+  { label: "Settings",          path: "/settings",  icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> },
+  { label: "Feedback",          path: "/feedback",  icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> },
+];
+
+/* ── Copy button ── */
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
-  const handle = async () => {
-    await navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  const handle = async () => { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); };
   return (
-    <button
-      onClick={handle}
-      className="flex items-center gap-1.5 text-xs font-medium transition"
-      style={{ color: copied ? "#2AA5C0" : "#3D5A62", background: "none", border: "none", cursor: "pointer" }}
-    >
-      {copied ? (
-        <>
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-          Copied
-        </>
-      ) : (
-        <>
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
-          Copy
-        </>
-      )}
+    <button onClick={handle} style={{ display:"flex", alignItems:"center", gap:5, fontSize:12, fontWeight:500, color: copied ? T.blue : T.muted2, background:"none", border:"none", cursor:"pointer", transition:"color 0.15s", fontFamily:"'Inter',sans-serif" }}>
+      {copied
+        ? <><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Copied</>
+        : <><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</>}
     </button>
   );
 }
 
-/* ─── Split Instagram content from visual direction note ─── */
-function splitInstagramContent(content: string): { body: string; visual: string | null } {
-  // Match the last [...] block at the end of the string (the visual direction)
+function splitInstagram(content: string): { body: string; visual: string | null } {
   const match = content.match(/^([\s\S]*?)(\[([^\]]+)\])\s*$/);
-  if (match) {
-    return { body: match[1].trimEnd(), visual: match[3].trim() };
-  }
-  return { body: content, visual: null };
+  return match ? { body: match[1].trimEnd(), visual: match[3].trim() } : { body: content, visual: null };
 }
 
-/* ─── Single platform card ─── */
+/* ── Platform card ── */
 function PlatformCard({ platform, content }: { platform: string; content: string }) {
-  const isTwitter = platform === "twitter";
+  const isTwitter   = platform === "twitter";
   const isInstagram = platform === "instagram";
-
-  const { body, visual } = isInstagram ? splitInstagramContent(content) : { body: content, visual: null };
-
-  const charCount = content.length;
-  const overLimit = isTwitter && charCount > 280;
+  const { body, visual } = isInstagram ? splitInstagram(content) : { body: content, visual: null };
+  const overLimit = isTwitter && content.length > 280;
 
   return (
-    <div
-      className="flex flex-col gap-3 flex-1 rounded-2xl p-5"
-      style={{ background: "rgba(12,20,23,0.7)", border: "1px solid rgba(255,255,255,0.06)", minWidth: 220 }}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2" style={{ color: "#2AA5C0" }}>
-          <div
-            className="flex items-center justify-center rounded-lg"
-            style={{ width: 28, height: 28, background: "rgba(25,97,117,0.15)", border: "1px solid rgba(42,165,192,0.18)" }}
-          >
-            {PLATFORM_ICONS[platform]}
-          </div>
-          <span className="text-xs font-medium">{PLATFORM_LABELS[platform] ?? platform}</span>
+    <div style={{ display:"flex", flexDirection:"column", gap:12, flex:1, borderRadius:16, padding:20, background:"rgba(255,255,255,0.04)", border:`1px solid ${T.border}`, backdropFilter:"blur(20px)", minWidth:220, boxShadow:"0 4px 20px rgba(0,0,0,0.25), 0 1px 0 rgba(255,255,255,0.05) inset" }}>
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+        <div style={{ display:"flex", alignItems:"center", gap:8, color:T.blue }}>
+          <div style={{ width:30, height:30, display:"flex", alignItems:"center", justifyContent:"center", borderRadius:8, background:T.blueDim, border:`1px solid ${T.blueBorder}` }}>{PLATFORM_ICONS[platform]}</div>
+          <span style={{ fontSize:12, fontWeight:600, fontFamily:"'Manrope',sans-serif" }}>{PLATFORM_LABELS[platform] ?? platform}</span>
         </div>
         <CopyButton text={content} />
       </div>
-
-      {/* Content */}
-      <p className="text-sm leading-relaxed flex-1 whitespace-pre-wrap" style={{ color: "#C5D8DC" }}>
-        {body}
-      </p>
-
-      {/* Instagram visual direction */}
+      <p style={{ fontSize:13, lineHeight:1.7, flex:1, whiteSpace:"pre-wrap", color:T.muted, fontFamily:"'Inter',sans-serif", fontWeight:300 }}>{body}</p>
       {isInstagram && visual && (
-        <div
-          className="flex items-start gap-2 rounded-xl px-3 py-2.5"
-          style={{ background: "rgba(25,97,117,0.07)", border: "1px solid rgba(42,165,192,0.1)" }}
-        >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2AA5C0" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ marginTop: 1, flexShrink: 0, opacity: 0.6 }}>
-            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-            <circle cx="12" cy="13" r="4" />
-          </svg>
-          <span className="text-xs leading-relaxed" style={{ color: "#3D6672", fontStyle: "italic" }}>
-            {visual}
-          </span>
+        <div style={{ display:"flex", alignItems:"flex-start", gap:8, borderRadius:10, padding:"10px 12px", background:T.blueDim, border:`1px solid ${T.blueBorder}` }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={T.blue} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" style={{ marginTop:1, flexShrink:0, opacity:0.7 }}><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <span style={{ fontSize:12, lineHeight:1.65, color:T.muted, fontStyle:"italic", fontFamily:"'Inter',sans-serif" }}>{visual}</span>
         </div>
       )}
-
-      {/* Twitter char count */}
       {isTwitter && (
-        <div className="flex justify-end">
-          <span className="text-xs font-medium" style={{ color: overLimit ? "#E07070" : "#2E4A55" }}>
-            {charCount} / 280
-          </span>
+        <div style={{ display:"flex", justifyContent:"flex-end" }}>
+          <span style={{ fontSize:11, fontWeight:500, color: overLimit ? "#E07070" : T.muted2, fontFamily:"'Inter',sans-serif" }}>{content.length} / 280</span>
         </div>
       )}
     </div>
   );
 }
 
-/* ─── Page ─── */
+/* ── Segmented control ── */
+function SegmentedControl({ options, value, onChange }: { options: { value: string; label: string }[]; value: string; onChange: (v: string) => void }) {
+  return (
+    <div style={{ display:"flex", gap:4, background:"rgba(255,255,255,0.03)", border:`1px solid ${T.border}`, borderRadius:10, padding:4 }}>
+      {options.map(opt => (
+        <button
+          key={opt.value}
+          onClick={() => onChange(opt.value)}
+          style={{
+            flex:1, padding:"7px 14px", borderRadius:7, fontSize:12, fontWeight:600,
+            fontFamily:"'Manrope',sans-serif", cursor:"pointer", border:"none",
+            background: value === opt.value ? T.blue : "transparent",
+            color: value === opt.value ? "#fff" : T.muted2,
+            transition:"background 0.14s, color 0.14s",
+            boxShadow: value === opt.value ? "0 2px 8px rgba(77,142,255,0.30)" : "none",
+          }}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/* ── Topic selector ── */
+function TopicSelector({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return (
+    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:7 }}>
+      {POST_TYPES.map(type => {
+        const sel = value === type;
+        return (
+          <button
+            key={type}
+            onClick={() => onChange(type)}
+            style={{
+              padding:"9px 12px", borderRadius:10, fontSize:12, fontWeight:500,
+              fontFamily:"'Inter',sans-serif", cursor:"pointer", textAlign:"left",
+              border:`1px solid ${sel ? T.blueBorder : T.border}`,
+              background: sel ? T.blueDim : "rgba(255,255,255,0.02)",
+              color: sel ? T.blue : T.muted,
+              transition:"all 0.14s",
+            }}
+          >
+            {type}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ── Section label ── */
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return <p style={{ fontSize:10, fontWeight:600, letterSpacing:"0.12em", textTransform:"uppercase" as const, color:T.muted2, marginBottom:8, fontFamily:"'Manrope',sans-serif" }}>{children}</p>;
+}
+
+/* ── Inner page ── */
 function GenerateInner() {
-  const { user } = useUser();
-  const router = useRouter();
+  const { user }    = useUser();
+  const router      = useRouter();
   const { signOut } = useClerk();
   const [avatarOpen, setAvatarOpen] = useState(false);
 
-  const convexUser = useQuery(api.users.getUser, user ? { clerkId: user.id } : "skip");
-  const products = useQuery(api.products.getUserProducts, user ? { userId: user.id } : "skip");
+  const convexUser     = useQuery(api.users.getUser,            user ? { clerkId: user.id } : "skip");
+  const products       = useQuery(api.products.getUserProducts,  user ? { userId: user.id } : "skip");
   const saveGeneration = useMutation(api.products.saveGeneration);
-  
+
   const searchParams = useSearchParams();
-  const productId = searchParams.get("id");
-  const product = productId
+  const productId    = searchParams.get("id");
+  const product      = productId
     ? products?.find((p: any) => p._id === productId) ?? products?.[0]
     : products?.[0];
-  // Fetch previous angle summaries for this product (skip until product is known)
-  const previousAngles = useQuery(
-    api.products.getRecentAngles,
-    product ? { productId: product._id, limit: 4 } : "skip"
-  );
 
-  const [generating, setGenerating] = useState(false);
-  const [generated, setGenerated] = useState<GeneratedData | null>(null);
-  const [activeDay, setActiveDay] = useState(1);
-  const [error, setError] = useState("");
+  const previousAngles = useQuery(api.products.getRecentAngles, product ? { productId: product._id, limit: 4 } : "skip");
 
-  const credits = convexUser?.credits ?? 0;
-  const initials = user?.firstName?.[0]?.toUpperCase() ?? user?.emailAddresses?.[0]?.emailAddress?.[0]?.toUpperCase() ?? "?";
-  const fullName = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || "Account";
+  // ── Mode
+  const [mode, setMode] = useState<"single" | "batch">("single");
+
+  // ── Shared
+  const [postLength,  setPostLength]  = useState<"short" | "medium" | "long">("medium");
+  const [generating,  setGenerating]  = useState(false);
+  const [generated,   setGenerated]   = useState<GeneratedData | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [error,       setError]       = useState("");
+
+  // ── Single config
+  const [singlePlatform, setSinglePlatform] = useState("twitter");
+  const [singleTopic,    setSingleTopic]    = useState(POST_TYPES[0]);
+
+  // ── Batch config
+  const [batchPlatforms, setBatchPlatforms] = useState<string[]>(product?.platforms ?? ["twitter"]);
+  const [batchTopics,    setBatchTopics]    = useState<string[]>([POST_TYPES[0]]);
+
+  const credits   = convexUser?.credits ?? 0;
+  const initials  = user?.firstName?.[0]?.toUpperCase() ?? user?.emailAddresses?.[0]?.emailAddress?.[0]?.toUpperCase() ?? "?";
+  const fullName  = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || "Account";
   const userEmail = user?.emailAddresses?.[0]?.emailAddress ?? "";
   const avatarRef = useRef<HTMLDivElement>(null);
 
@@ -201,142 +210,153 @@ function GenerateInner() {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  // sync batch platforms with product on load
+  useEffect(() => {
+    if (product?.platforms?.length) setBatchPlatforms(product.platforms);
+  }, [product?._id]);
+
   const isLoading = !convexUser || !products;
-  const currentDay = generated?.days.find(d => d.day === activeDay);
-  const totalDays = generated?.days.length ?? 7;
+
+  // Credit cost: single = 1, batch = number of batches
+  const creditCost = mode === "single" ? 1 : batchTopics.length;
+
+  const toggleBatchPlatform = (p: string) => {
+    setBatchPlatforms(prev =>
+      prev.includes(p) ? (prev.length > 1 ? prev.filter(x => x !== p) : prev) : [...prev, p]
+    );
+  };
+
+  const addBatch = () => {
+    if (batchTopics.length < 4) setBatchTopics(prev => [...prev, POST_TYPES[prev.length % POST_TYPES.length]]);
+  };
+
+  const removeBatch = (i: number) => {
+    if (batchTopics.length > 1) setBatchTopics(prev => prev.filter((_, idx) => idx !== i));
+  };
+
+  const updateBatchTopic = (i: number, val: string) => {
+    setBatchTopics(prev => { const next = [...prev]; next[i] = val; return next; });
+  };
 
   const handleGenerate = async () => {
-    if (!user || !product || credits < 1) return;
+    if (!user || !product || credits < creditCost) return;
     setGenerating(true); setError(""); setGenerated(null);
+
     try {
-      const res  = await fetch("/api/generate", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({
+      let body: any;
+      if (mode === "single") {
+        body = {
+          mode: "single",
           product,
-          examplePosts:   convexUser?.examplePosts ?? [],
-          previousAngles: previousAngles ?? [],        // ← anti-repetition history
-        }),
-      });
-      const json = await res.json();
-      if (!json.success) {
-        setError(json.error ?? "Generation failed. Please try again.");
-        setGenerating(false);
-        return;
+          examplePosts: convexUser?.examplePosts ?? [],
+          postLength,
+          platform: singlePlatform,
+          topic: singleTopic,
+        };
+      } else {
+        body = {
+          mode: "batch",
+          product,
+          examplePosts: convexUser?.examplePosts ?? [],
+          previousAngles: previousAngles ?? [],
+          postLength,
+          platforms: batchPlatforms,
+          batchTopics,
+        };
       }
-      await saveGeneration({
-        userId:       user.id,
-        productId:    product._id as Id<"products">,
-        posts:        json.data,
-        windowDays:   7,
-        angleSummary: json.angleSummary ?? undefined,  // ← store for next time
-      });
-      setGenerated(json.data);
-      setActiveDay(1);
-    } catch {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setGenerating(false);
-    }
+
+      const res  = await fetch("/api/generate", { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(body) });
+      const json = await res.json();
+      if (!json.success) { setError(json.error ?? "Generation failed. Please try again."); setGenerating(false); return; }
+
+      // Save to DB & deduct credits
+      if (mode === "single") {
+        await saveGeneration({
+          userId: user.id,
+          productId: product._id as Id<"products">,
+          posts: { mode: "single", result: json.data },
+          windowDays: 1,
+          angleSummary: `Single: ${singleTopic} (${singlePlatform})`,
+        });
+        setGenerated({ mode: "single", result: json.data });
+      } else {
+        await saveGeneration({
+          userId: user.id,
+          productId: product._id as Id<"products">,
+          posts: { mode: "batch", batches: json.data.batches },
+          windowDays: batchTopics.length,
+          angleSummary: json.angleSummary ?? undefined,
+        });
+        setGenerated({ mode: "batch", batches: json.data.batches });
+      }
+      setActiveIndex(0);
+    } catch { setError("Something went wrong. Please try again."); }
+    finally { setGenerating(false); }
   };
 
   if (isLoading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: "#080D10" }}>
-      <div className="rounded-full animate-spin" style={{ width: 20, height: 20, border: "1.5px solid rgba(25,97,117,0.2)", borderTopColor: "#2AA5C0" }} />
+    <div style={{ minHeight:"100vh", background:T.bg, display:"flex", alignItems:"center", justifyContent:"center" }}>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      <div style={{ width:22, height:22, borderRadius:"50%", border:"2px solid rgba(77,142,255,0.15)", borderTopColor:T.blue, animation:"spin 0.75s linear infinite" }} />
     </div>
   );
 
   if (!product) { router.replace("/onboarding"); return null; }
 
+  const canGenerate = credits >= creditCost && !generating;
+
   return (
-    <div className="min-h-screen" style={{ background: "#080D10", fontFamily: "'Inter', -apple-system, sans-serif", color: "#F0F4F5" }}>
+    <div style={{ minHeight:"100vh", background:T.bg, fontFamily:"'Inter',sans-serif", color:T.text, overflowX:"hidden" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap');
+        *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+        @keyframes spin   { to { transform:rotate(360deg); } }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:none; } }
+        @keyframes ddIn   { from { opacity:0; transform:translateY(-6px) scale(0.97); } to { opacity:1; transform:none; } }
+        @keyframes blob1  { 0%{transform:translate(0,0) scale(1)}25%{transform:translate(80px,60px) scale(1.05)}50%{transform:translate(40px,120px) scale(0.95)}75%{transform:translate(-60px,50px) scale(1.08)}100%{transform:translate(0,0) scale(1)} }
+        .gddi { display:flex; align-items:center; gap:10px; padding:9px 15px; width:100%; background:none; border:none; cursor:pointer; font-family:'Inter',sans-serif; font-size:13px; font-weight:400; color:${T.muted}; text-align:left; transition:background 0.1s,color 0.1s; }
+        .gddi:hover { background:rgba(255,255,255,0.04); color:${T.text}; }
+        .gddi svg { opacity:0.45; flex-shrink:0; transition:opacity 0.1s; }
+        .gddi:hover svg { opacity:0.8; }
+        .gddi-red:hover { background:rgba(192,57,43,0.08) !important; color:#D87070 !important; }
+        .noise-bg { position:fixed; inset:0; pointer-events:none; z-index:0; opacity:0.028; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); background-size:256px 256px; }
+        .platform-cards { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-start; }
+        @media (max-width:640px) { .gen-main { padding: 40px 20px 80px !important; } }
+      `}</style>
 
-      {/* Ambient + dot grid */}
+      <div className="noise-bg" />
+      <div style={{ position:"fixed", top:-200, left:"30%", width:500, height:500, borderRadius:"50%", background:"radial-gradient(circle, rgba(77,142,255,0.08) 0%, transparent 70%)", filter:"blur(80px)", pointerEvents:"none", zIndex:0, animation:"blob1 22s ease-in-out infinite" }} />
 
-      {/* ── Nav ── */}
-      <nav
-        className="sticky top-0 z-50 flex items-center justify-between px-6"
-        style={{ height: 54, borderBottom: "1px solid rgba(255,255,255,0.05)", background: "rgba(8,13,16,0.85)", backdropFilter: "blur(20px)" }}
-      >
-        {/* Left: logo + breadcrumb */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <a href="#" style={{ fontFamily: "'Manrope',sans-serif", fontSize: 19, fontWeight: 500, color: "var(--text)", textDecoration: "none", letterSpacing: -0.5 }}>Pervasive<span style={{ color: "#2AA5C0" }}>ly</span></a>
-            {/* <img src="/pervasively.jpg" alt="Pervasively" style={{ width: 26, height: 26, borderRadius: 7, objectFit: "cover" }} />
-            <span className="font-medium" style={{ fontSize: 14, letterSpacing: -0.3, color: "#EDF2F4" }}>Pervasively</span> */}
-          </div>
-          {/* <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.07)" }} /> */}
-          {/* <button
-            onClick={() => router.push("/dashboard")}
-            className="flex items-center gap-1.5 text-xs font-medium transition"
-            style={{ color: "#2E4A55", background: "none", border: "none", cursor: "pointer", letterSpacing: -0.1 }}
-            onMouseEnter={e => (e.currentTarget.style.color = "#8AABB5")}
-            onMouseLeave={e => (e.currentTarget.style.color = "#2E4A55")}
-          >
-            <ChevronLeft size={13} /> Dashboard
-          </button> */}
-        </div>
-
-        {/* Right: credits + avatar */}
-        <div className="flex items-center gap-2.5">
-          <div className="flex items-center gap-1.5 rounded-full px-3 py-1.5" style={{ background: "rgba(12,20,23,0.9)", border: "1px solid rgba(255,255,255,0.065)" }}>
-            {/* <div className="rounded-full" style={{ width: 6, height: 6, background: credits > 0 ? "#2AA5C0" : "#2E4A55", boxShadow: "none" }} /> */}
-            <span className="text-xs font-medium" style={{ color: credits > 0 ? "#C5D8DC" : "#3D5A62" }}>
+      {/* Nav */}
+      <nav style={{ position:"sticky", top:0, zIndex:100, borderBottom:"1px solid rgba(255,255,255,0.07)", background:"rgba(10,13,18,0.88)", backdropFilter:"blur(20px)", WebkitBackdropFilter:"blur(20px)", padding:"0 56px", height:58, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+        <a href="/dashboard" style={{ fontFamily:"'Manrope',sans-serif", fontSize:20, fontWeight:600, color:T.text, textDecoration:"none", letterSpacing:-0.5 }}>
+          Pervasive<span style={{ color:T.blue }}>ly</span>
+        </a>
+        <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:6, background:T.blueDim, border:`1px solid ${T.blueBorder}`, borderRadius:100, padding:"5px 14px" }}>
+            <div style={{ width:6, height:6, borderRadius:"50%", background: credits > 0 ? T.blue : T.muted2, boxShadow: credits > 0 ? "0 0 6px rgba(77,142,255,0.7)" : "none" }} />
+            <span style={{ fontSize:12, fontWeight:500, color: credits > 0 ? "#A8C4FF" : T.muted2, fontFamily:"'Inter',sans-serif" }}>
               {credits} {credits === 1 ? "credit" : "credits"}
             </span>
           </div>
-
-          {/* Avatar dropdown */}
-          <div ref={avatarRef} style={{ position: "relative" }}>
-            <button
-              onClick={() => setAvatarOpen(o => !o)}
-              style={{
-                width: 30, height: 30, borderRadius: "50%",
-                background: "#0e2028",
-                border: avatarOpen ? "1.5px solid rgba(42,165,192,0.7)" : "1.5px solid rgba(25,97,117,0.35)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 11, fontWeight: 400, color: "rgba(255,255,255,0.9)", cursor: "pointer",
-                boxShadow: "none",
-                transition: "all 0.16s", outline: "none",
-              }}
-            >{initials}</button>
-
+          <div ref={avatarRef} style={{ position:"relative" }}>
+            <button onClick={() => setAvatarOpen(o => !o)} style={{ width:32, height:32, borderRadius:"50%", background:T.blueDim, border: avatarOpen ? "1.5px solid rgba(77,142,255,0.7)" : "1.5px solid rgba(77,142,255,0.25)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, fontWeight:600, color:"#A8C4FF", fontFamily:"'Manrope',sans-serif", cursor:"pointer", outline:"none", transition:"border-color 0.15s" }}>{initials}</button>
             {avatarOpen && (
-              <div style={{
-                position: "absolute", top: "calc(100% + 8px)", right: 0, width: 228,
-                background: "rgba(10,16,20,0.97)", border: "1px solid rgba(255,255,255,0.08)",
-                borderRadius: 14, overflow: "hidden",
-                backdropFilter: "blur(28px)", animation: "ddIn 0.14s cubic-bezier(0.16,1,0.3,1)",
-              }}>
-                <style>{`
-                  @keyframes ddIn { from { opacity:0; transform:translateY(-5px) scale(0.97); } to { opacity:1; transform:none; } }
-                  .gddi { display:flex; align-items:center; gap:9px; padding:9px 14px; width:100%; background:none; border:none; cursor:pointer; font-family:'Inter',-apple-system,sans-serif; font-size:13px; font-weight:450; color:#7A9EAA; text-align:left; transition:background 0.1s,color 0.1s; }
-                  .gddi:hover { background:rgba(255,255,255,0.04); color:#E0EAED; }
-                  .gddi svg { opacity:0.5; flex-shrink:0; transition:opacity 0.1s; }
-                  .gddi:hover svg { opacity:0.85; }
-                  .gddi-red:hover { background:rgba(200,65,65,0.08) !important; color:#D87070 !important; }
-                `}</style>
-                <div style={{ padding: "13px 14px 11px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                  <div style={{ fontSize: 13, fontWeight: 500, color: "#E0EAED", marginBottom: 2 }}>{fullName}</div>
-                  <div style={{ fontSize: 11, color: "#2E4A55", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{userEmail}</div>
+              <div style={{ position:"absolute", top:"calc(100% + 10px)", right:0, width:236, background:"rgba(10,13,18,0.97)", border:"1px solid rgba(255,255,255,0.09)", borderRadius:16, overflow:"hidden", boxShadow:"0 8px 40px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.06) inset", backdropFilter:"blur(28px)", WebkitBackdropFilter:"blur(28px)", animation:"ddIn 0.15s cubic-bezier(0.16,1,0.3,1)" }}>
+                <div style={{ padding:"14px 15px 12px", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
+                  <div style={{ fontSize:13, fontWeight:600, color:T.text, letterSpacing:-0.2, marginBottom:3, fontFamily:"'Manrope',sans-serif" }}>{fullName}</div>
+                  <div style={{ fontSize:11, color:T.muted2, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontFamily:"'Inter',sans-serif" }}>{userEmail}</div>
                 </div>
-                <div style={{ padding: "5px 0" }}>
-                  {([
-                    { label: "Dashboard", path: "/dashboard", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /></svg> },
-                    { label: "Billing & credits", path: "/billing", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" /><line x1="1" y1="10" x2="23" y2="10" /></svg> },
-                    { label: "History", path: "/history", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg> },
-                    { label: "Settings", path: "/settings", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg> },
-                    { label: "Feedback", path: "/feedback", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg> },
-                  ] as { label: string; path: string; icon: React.ReactNode }[]).map(({ label, path, icon }) => (
-                    <button key={label} className="gddi" onClick={() => { router.push(path); setAvatarOpen(false); }}>
-                      {icon}{label}
-                    </button>
+                <div style={{ padding:"6px 0" }}>
+                  {NAV_ITEMS.map(({ label, path, icon }) => (
+                    <button key={label} className="gddi" onClick={() => { router.push(path); setAvatarOpen(false); }}>{icon}{label}</button>
                   ))}
                 </div>
-                <div style={{ height: 1, background: "rgba(255,255,255,0.05)", margin: "2px 0" }} />
-                <div style={{ padding: "5px 0 7px" }}>
+                <div style={{ height:1, background:"rgba(255,255,255,0.05)", margin:"2px 0" }} />
+                <div style={{ padding:"5px 0 7px" }}>
                   <button className="gddi gddi-red" onClick={() => signOut(() => router.replace("/sign-in"))}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                     Sign out
                   </button>
                 </div>
@@ -346,186 +366,293 @@ function GenerateInner() {
         </div>
       </nav>
 
-      <main className="relative z-10 mx-auto px-6 py-12" style={{ maxWidth: 920 }}>
+      <main className="gen-main" style={{ maxWidth:900, margin:"0 auto", padding:"56px 56px 100px", position:"relative", zIndex:1, animation:"fadeUp 0.5s ease-out both" }}>
 
         {/* Page header */}
-        <div className="mb-10">
-          {/* <p className="text-xs font-bold uppercase mb-2" style={{ color: "#196175", letterSpacing: "0.12em" }}>Content generation</p> */}
-          <h1 className="tracking-tight mb-1.5" style={{ fontWeight: 500, fontSize: 26, letterSpacing: -0.7, color: "#EDF2F4" }}>
-            {generated ? `${product.name}: this week` : "Generate your week"}
+        <div style={{ marginBottom:36 }}>
+          <div style={{ fontFamily:"'Manrope',sans-serif", fontSize:10, fontWeight:600, letterSpacing:"0.14em", textTransform:"uppercase" as const, color:T.blue, marginBottom:10 }}>Content generation</div>
+          <h1 style={{ fontFamily:"'Manrope',sans-serif", fontSize:"clamp(26px,4vw,40px)", fontWeight:600, letterSpacing:-1.2, color:T.text, lineHeight:1.05, marginBottom:8 }}>
+            {generated ? "Your posts" : "Generate content"}
           </h1>
-          <p className="text-sm" style={{ color: "#3D5A62" }}>
+          <p style={{ fontSize:14, color:T.muted, fontWeight:300 }}>
             {generated
-              ? `${totalDays} days, ${product.platforms.length} platform${product.platforms.length !== 1 ? "s" : ""}, ${totalDays * product.platforms.length} posts`
-              : `7 days, ${product.platforms.length} platform${product.platforms.length !== 1 ? "s" : ""}, 1 credit`}
+              ? generated.mode === "single"
+                ? `1 post · ${PLATFORM_LABELS[generated.result.platform]} · ${generated.result.topic}`
+                : `${generated.batches.length} batch${generated.batches.length > 1 ? "es" : ""} · ${batchPlatforms.length} platform${batchPlatforms.length !== 1 ? "s" : ""} · ${generated.batches.length * batchPlatforms.length} posts`
+              : "Single post or full batch — you choose."}
           </p>
         </div>
 
-        {/* ── Pre-generation card ── */}
+        {/* Config card (shown when not yet generated) */}
         {!generated && (
-          <div
-            className="flex flex-col items-center text-center rounded-2xl p-12 mb-6 relative overflow-hidden"
-            style={{ background: "rgba(12,20,23,0.65)", border: "1px solid rgba(42,165,192,0.13)" }}
-          >
-            {/* <div className="pointer-events-none absolute" style={{ top: -60, right: -60, width: 240, height: 240, background: "radial-gradient(circle, rgba(42,165,192,0.06) 0%, transparent 70%)" }} /> */}
+          <div style={{ borderRadius:20, padding:32, background:"rgba(255,255,255,0.04)", backdropFilter:"blur(20px) saturate(1.6)", WebkitBackdropFilter:"blur(20px) saturate(1.6)", border:`1px solid ${T.border}`, boxShadow:"0 4px 32px rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,255,0.06) inset", display:"flex", flexDirection:"column", gap:28 }}>
 
-            {/* <div className="flex items-center justify-center rounded-2xl mb-5" style={{ width: 52, height: 52, background: "rgba(25,97,117,0.12)", border: "1px solid rgba(42,165,192,0.2)" }}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2AA5C0" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            </div> */}
-
-            <h2 className="mb-2" style={{ fontWeight: 500, fontSize: 17, letterSpacing: -0.3, color: "#EDF2F4" }}>
-              {credits < 1 ? "No credits remaining" : "Ready to generate"}
-            </h2>
-            <p className="text-sm mb-8" style={{ color: "#3D5A62", maxWidth: 360, lineHeight: 1.7 }}>
-              {credits < 1
-                ? "Top up your credits to generate content."
-                : `Pervasively will write ${product.platforms.length * 7} platform-native posts from your product brief – one per platform, per day. Takes about 15 seconds.`}
-            </p>
-
-            {/* Platform + window pills */}
-            <div className="flex flex-wrap gap-2 justify-center mb-8">
-              {product.platforms.map((p: string) => (
-                <span
-                  key={p}
-                  className="inline-flex items-center gap-1.5 text-xs font-medium rounded-full px-3 py-1"
-                  style={{ color: "#2AA5C0", border: "1px solid rgba(42,165,192,0.18)", background: "rgba(25,97,117,0.09)" }}
-                >
-                  {PLATFORM_ICONS[p]}
-                  {PLATFORM_LABELS[p] ?? p}
-                </span>
-              ))}
-              <span className="text-xs font-medium rounded-full px-3 py-1" style={{ color: "#2E4A55", border: "1px solid rgba(255,255,255,0.05)", background: "rgba(12,20,23,0.5)" }}>
-                7 days
-              </span>
+            {/* Mode toggle */}
+            <div>
+              <SectionLabel>Mode</SectionLabel>
+              <SegmentedControl
+                value={mode}
+                onChange={v => { setMode(v as any); setGenerated(null); setError(""); }}
+                options={[{ value:"single", label:"Single post" }, { value:"batch", label:"Batch" }]}
+              />
+              {/* <p style={{ fontSize:11, color:T.muted2, marginTop:8, fontFamily:"'Inter',sans-serif" }}>
+                {mode === "single" ? "Generate 1 post for 1 platform — costs 1 credit." : `Generate ${batchTopics.length} batch${batchTopics.length > 1 ? "es" : ""} × ${batchPlatforms.length} platform${batchPlatforms.length !== 1 ? "s" : ""} = ${batchTopics.length * batchPlatforms.length} posts — costs ${batchTopics.length} credit${batchTopics.length > 1 ? "s" : ""}.`}
+              </p> */}
             </div>
 
-            <button
-              onClick={credits < 1 ? () => router.push("/billing") : handleGenerate}
-              disabled={generating}
-              className="flex items-center gap-2 rounded-xl transition"
-              style={{
-                padding: "12px 28px", fontSize: 13, letterSpacing: -0.1,
-                background: credits < 1 ? "rgba(255,255,255,0.04)" : "#196175",
-                border: credits < 1 ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(42,165,192,0.28)",
-                color: credits < 1 ? "#4A6A75" : "#fff",
-                opacity: generating ? 0.7 : 1, cursor: generating ? "wait" : "pointer",
-              }}
-            >
-              {generating ? (
-                <>
-                  <div className="rounded-full animate-spin" style={{ width: 14, height: 14, border: "1.5px solid rgba(255,255,255,0.2)", borderTopColor: "#fff" }} />
-                  Generating…
-                </>
-              ) : credits < 1 ? <span className="flex items-center gap-2">Add credits <MoveRight size={14} /></span> : <span style={{ fontWeight: 500 }} className="flex items-center gap-2">Generate this week's content </span>}
-            </button>
-          </div>
-        )}
+            <div style={{ height:1, background:T.border }} />
 
-        {/* Error */}
-        {error && (
-          <div className="rounded-xl px-4 py-3 mb-5" style={{ background: "rgba(224,90,90,0.07)", border: "1px solid rgba(224,90,90,0.18)" }}>
-            <p className="text-sm" style={{ color: "#E07070" }}>{error}</p>
-          </div>
-        )}
-
-        {/* ── Generated view ── */}
-        {generated && (
-          <>
-            {/* Top bar */}
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-2">
-                <div className="rounded-full" style={{ width: 7, height: 7, background: "#2AA5C0", boxShadow: "none" }} />
-                <span className="text-xs font-medium" style={{ color: "#3D5A62" }}>
-                  {totalDays * product.platforms.length} posts ready
-                </span>
-              </div>
-              <button
-                onClick={handleGenerate}
-                disabled={generating || credits < 1}
-                className="text-xs font-medium rounded-lg px-3 py-1.5 transition"
-                style={{ color: "#2AA5C0", background: "rgba(42,165,192,0.07)", border: "1px solid rgba(42,165,192,0.14)", opacity: generating || credits < 1 ? 0.4 : 1, cursor: "pointer" }}
-                onMouseEnter={e => (e.currentTarget.style.background = "rgba(42,165,192,0.13)")}
-                onMouseLeave={e => (e.currentTarget.style.background = "rgba(42,165,192,0.07)")}
-              >
-                {generating ? "Generating…" : "Regenerate — 1 credit"}
-              </button>
-            </div>
-
-            {/* ── Day strip ── */}
-            <div className="flex gap-2 mb-6 pb-1 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
-              {generated.days.map(day => {
-                const active = day.day === activeDay;
-                return (
-                  <button
-                    key={day.day}
-                    onClick={() => setActiveDay(day.day)}
-                    className="flex flex-col items-center gap-1 rounded-xl flex-shrink-0 transition"
-                    style={{
-                      padding: "10px 16px",
-                      background: active ? "rgba(25,97,117,0.18)" : "rgba(12,20,23,0.55)",
-                      border: active ? "1px solid rgba(42,165,192,0.35)" : "1px solid rgba(255,255,255,0.052)",
-                      boxShadow: "none",
-                      cursor: "pointer", outline: "none",
-                    }}
-                  >
-                    <span className="font-bold" style={{ fontSize: 10, letterSpacing: "0.09em", color: active ? "#2AA5C0" : "#2E4A55" }}>
-                      DAY {day.day}
-                    </span>
-                    <span className="font-medium whitespace-nowrap" style={{ fontSize: 11, color: active ? "#8AABB5" : "#243E48" }}>
-                      {shortType(day.type)}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* ── Active day content ── */}
-            {currentDay && (
+            {/* ── SINGLE CONFIG ── */}
+            {mode === "single" && (
               <>
-                <div className="flex items-baseline gap-2.5 mb-4">
-                  <span className="font-medium" style={{ fontSize: 15, letterSpacing: -0.3, color: "#EDF2F4" }}>Day {currentDay.day}</span>
-                  <span className="text-xs font-medium" style={{ color: "#2E4A55" }}>{currentDay.type}</span>
+                {/* Platform */}
+                <div>
+                  <SectionLabel>Platform</SectionLabel>
+                  <div style={{ display:"flex", gap:8 }}>
+                    {["twitter","instagram","linkedin"].filter(p => product.platforms.includes(p)).map(p => {
+                      const sel = singlePlatform === p;
+                      return (
+                        <button key={p} onClick={() => setSinglePlatform(p)} style={{ display:"flex", alignItems:"center", gap:7, padding:"8px 16px", borderRadius:10, fontSize:12, fontWeight:600, fontFamily:"'Manrope',sans-serif", cursor:"pointer", border:`1px solid ${sel ? T.blueBorder : T.border}`, background: sel ? T.blueDim : "rgba(255,255,255,0.02)", color: sel ? T.blue : T.muted, transition:"all 0.14s" }}>
+                          {PLATFORM_ICONS[p]}{PLATFORM_LABELS[p]}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
-                {/* Platform cards — side by side */}
-                <div className="flex gap-3" style={{ flexWrap: "wrap", alignItems: "flex-start" }}>
-                  {product.platforms.map((platform: string) => {
-                    const content = currentDay.posts[platform as keyof Post];
-                    if (!content) return null;
-                    return <PlatformCard key={platform} platform={platform} content={content} />;
-                  })}
+                {/* Length */}
+                <div>
+                  <SectionLabel>Post length</SectionLabel>
+                  <SegmentedControl
+                    value={postLength}
+                    onChange={v => setPostLength(v as any)}
+                    options={[{ value:"short", label:"Short" }, { value:"medium", label:"Medium" }, { value:"long", label:"Long" }]}
+                  />
+                  <p style={{ fontSize:11, color:T.muted2, marginTop:6, fontFamily:"'Inter',sans-serif" }}>
+                    {postLength === "short" && "Punchy and minimal — Ryanair energy"}
+                    {postLength === "medium" && "Balanced — the default sweet spot"}
+                    {postLength === "long" && "More context, more depth"}
+                  </p>
                 </div>
 
-                {/* Prev / Next */}
-                <div className="flex items-center justify-between mt-6">
-                  <button
-                    onClick={() => setActiveDay(d => Math.max(1, d - 1))}
-                    disabled={activeDay === 1}
-                    className="flex items-center gap-1.5 text-xs font-medium transition"
-                    style={{ color: activeDay === 1 ? "#1E2E33" : "#3D5A62", background: "none", border: "none", cursor: activeDay === 1 ? "default" : "pointer" }}
-                    onMouseEnter={e => { if (activeDay !== 1) e.currentTarget.style.color = "#8AABB5"; }}
-                    onMouseLeave={e => { if (activeDay !== 1) e.currentTarget.style.color = "#3D5A62"; }}
-                  >
-                    <ChevronLeft size={13} /> Previous day
-                  </button>
-                  <span className="text-xs font-medium" style={{ color: "#243E48", letterSpacing: "0.05em" }}>
-                    {activeDay} / {totalDays}
-                  </span>
-                  <button
-                    onClick={() => setActiveDay(d => Math.min(totalDays, d + 1))}
-                    disabled={activeDay === totalDays}
-                    className="flex items-center gap-1.5 text-xs font-medium transition"
-                    style={{ color: activeDay === totalDays ? "#1E2E33" : "#3D5A62", background: "none", border: "none", cursor: activeDay === totalDays ? "default" : "pointer" }}
-                    onMouseEnter={e => { if (activeDay !== totalDays) e.currentTarget.style.color = "#8AABB5"; }}
-                    onMouseLeave={e => { if (activeDay !== totalDays) e.currentTarget.style.color = "#3D5A62"; }}
-                  >
-                    Next day <ChevronRight size={13} />
-                  </button>
+                {/* Topic */}
+                <div>
+                  <SectionLabel>Topic</SectionLabel>
+                  <TopicSelector value={singleTopic} onChange={setSingleTopic} />
                 </div>
               </>
             )}
 
+            {/* ── BATCH CONFIG ── */}
+            {mode === "batch" && (
+              <>
+                {/* Platforms */}
+                <div>
+                  <SectionLabel>Platforms</SectionLabel>
+                  <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+                    {["twitter","instagram","linkedin"].filter(p => product.platforms.includes(p)).map(p => {
+                      const sel = batchPlatforms.includes(p);
+                      return (
+                        <button key={p} onClick={() => toggleBatchPlatform(p)} style={{ display:"flex", alignItems:"center", gap:7, padding:"8px 16px", borderRadius:10, fontSize:12, fontWeight:600, fontFamily:"'Manrope',sans-serif", cursor:"pointer", border:`1px solid ${sel ? T.blueBorder : T.border}`, background: sel ? T.blueDim : "rgba(255,255,255,0.02)", color: sel ? T.blue : T.muted, transition:"all 0.14s" }}>
+                          {PLATFORM_ICONS[p]}{PLATFORM_LABELS[p]}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
 
+                {/* Length */}
+                <div>
+                  <SectionLabel>Post length</SectionLabel>
+                  <SegmentedControl
+                    value={postLength}
+                    onChange={v => setPostLength(v as any)}
+                    options={[{ value:"short", label:"Short" }, { value:"medium", label:"Medium" }, { value:"long", label:"Long" }]}
+                  />
+                  <p style={{ fontSize:11, color:T.muted2, marginTop:6, fontFamily:"'Inter',sans-serif" }}>
+                    {postLength === "short" && "Punchy and minimal"}
+                    {postLength === "medium" && "Balanced — the default sweet spot"}
+                    {postLength === "long" && "More context, more depth"}
+                  </p>
+                </div>
+
+                {/* Batches */}
+                <div>
+                  <SectionLabel>Batches — pick a topic per batch</SectionLabel>
+                  <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+                    {batchTopics.map((topic, i) => (
+                      <div key={i} style={{ borderRadius:14, border:`1px solid ${T.border}`, background:"rgba(255,255,255,0.02)", overflow:"hidden" }}>
+                        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"10px 14px", borderBottom:`1px solid ${T.border}` }}>
+                          <span style={{ fontSize:11, fontWeight:600, letterSpacing:"0.10em", textTransform:"uppercase" as const, color:T.muted2, fontFamily:"'Manrope',sans-serif" }}>Batch {i + 1}</span>
+                          {batchTopics.length > 1 && (
+                            <button onClick={() => removeBatch(i)} style={{ background:"none", border:"none", cursor:"pointer", color:T.muted2, display:"flex", alignItems:"center", transition:"color 0.14s" }} onMouseEnter={e => (e.currentTarget.style.color = "#E07070")} onMouseLeave={e => (e.currentTarget.style.color = T.muted2)}>
+                              <Trash2 size={13} />
+                            </button>
+                          )}
+                        </div>
+                        <div style={{ padding:12 }}>
+                          <TopicSelector value={topic} onChange={v => updateBatchTopic(i, v)} />
+                        </div>
+                      </div>
+                    ))}
+
+                    {batchTopics.length < 4 && (
+                      <button
+                        onClick={addBatch}
+                        style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:7, width:"100%", padding:"11px", background:"none", border:`1px dashed ${T.blueBorder}`, borderRadius:12, fontSize:12, fontWeight:500, color:"rgba(77,142,255,0.5)", cursor:"pointer", fontFamily:"'Inter',sans-serif", transition:"color 0.14s, border-color 0.14s" }}
+                        onMouseEnter={e => { (e.currentTarget.style.color = T.blue); (e.currentTarget.style.borderColor = T.blue); }}
+                        onMouseLeave={e => { (e.currentTarget.style.color = "rgba(77,142,255,0.5)"); (e.currentTarget.style.borderColor = T.blueBorder); }}
+                      >
+                        <Plus size={13} /> Add batch
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+
+            <div style={{ height:1, background:T.border }} />
+
+            {/* Generate button */}
+            {error && (
+              <div style={{ borderRadius:10, padding:"10px 14px", background:"rgba(224,90,90,0.07)", border:"1px solid rgba(224,90,90,0.18)" }}>
+                <p style={{ fontSize:13, color:"#E07070", fontFamily:"'Inter',sans-serif" }}>{error}</p>
+              </div>
+            )}
+
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+              <p style={{ fontSize:12, color: credits < creditCost ? "#E07070" : T.muted2, fontFamily:"'Inter',sans-serif" }}>
+                {credits < creditCost
+                  ? `Not enough credits — you need ${creditCost}, you have ${credits}.`
+                  : `${creditCost} credit${creditCost > 1 ? "s" : ""} will be used`}
+              </p>
+              <button
+                onClick={credits < creditCost ? () => router.push("/billing") : handleGenerate}
+                disabled={generating}
+                style={{
+                  display:"inline-flex", alignItems:"center", gap:8, padding:"12px 28px",
+                  background: credits < creditCost ? "rgba(255,255,255,0.04)" : "linear-gradient(160deg, rgba(120,170,255,0.45) 0%, rgba(55,110,240,0.62) 50%, rgba(37,90,210,0.72) 100%)",
+                  border: credits < creditCost ? `1px solid ${T.border}` : "1px solid rgba(160,200,255,0.50)",
+                  borderRadius:10, color: credits < creditCost ? T.muted : "#ffffff",
+                  fontSize:13, fontWeight:600, cursor: generating ? "wait" : credits < creditCost ? "pointer" : "pointer",
+                  backdropFilter:"blur(24px) saturate(2)",
+                  WebkitBackdropFilter:"blur(24px) saturate(2)",
+                  boxShadow: credits < creditCost ? "none" : "0 1px 0 rgba(255,255,255,0.35) inset, 0 -1px 0 rgba(0,0,0,0.15) inset, 0 4px 20px rgba(77,142,255,0.20)",
+                  transition:"transform 0.15s ease-out, box-shadow 0.15s ease-out, background 0.15s ease",
+                  opacity: generating ? 0.7 : 1, fontFamily:"'Manrope',sans-serif",
+                }}
+                onMouseEnter={e => { if (canGenerate && credits >= creditCost) { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1.03)"; (e.currentTarget as HTMLButtonElement).style.background = "linear-gradient(160deg, rgba(140,185,255,0.55) 0%, rgba(70,125,250,0.70) 50%, rgba(45,100,220,0.80) 100%)"; } }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)"; if (credits >= creditCost) (e.currentTarget as HTMLButtonElement).style.background = "linear-gradient(160deg, rgba(120,170,255,0.45) 0%, rgba(55,110,240,0.62) 50%, rgba(37,90,210,0.72) 100%)"; }}
+              >
+                {generating ? (
+                  <><div style={{ width:13, height:13, borderRadius:"50%", border:"1.5px solid rgba(255,255,255,0.2)", borderTopColor:"#fff", animation:"spin 0.7s linear infinite" }} />Generating…</>
+                ) : credits < creditCost ? (
+                  <>Add credits <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></>
+                ) : (
+                  <>Generate <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── RESULTS ── */}
+        {generated && (
+          <>
+            {/* Top bar */}
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:24 }}>
+              <div style={{ display:"flex", alignItems:"center", gap:7 }}>
+                <div style={{ width:7, height:7, borderRadius:"50%", background:T.blue, boxShadow:"0 0 8px rgba(77,142,255,0.7)" }} />
+                <span style={{ fontSize:12, fontWeight:500, color:T.muted, fontFamily:"'Inter',sans-serif" }}>
+                  {generated.mode === "single" ? "1 post ready" : `${generated.batches.length * batchPlatforms.length} posts ready`}
+                </span>
+              </div>
+              <button
+                onClick={() => { setGenerated(null); setError(""); }}
+                style={{ fontSize:12, fontWeight:600, color:T.blue, background:T.blueDim, border:`1px solid ${T.blueBorder}`, borderRadius:8, padding:"6px 14px", cursor:"pointer", fontFamily:"'Manrope',sans-serif", transition:"background 0.14s" }}
+                onMouseEnter={e => (e.currentTarget.style.background = "rgba(77,142,255,0.18)")}
+                onMouseLeave={e => (e.currentTarget.style.background = T.blueDim)}
+              >
+                New generation
+              </button>
+            </div>
+
+            {/* SINGLE result */}
+            {generated.mode === "single" && (
+              <div style={{ borderRadius:20, padding:28, background:"rgba(255,255,255,0.04)", border:`1px solid ${T.border}`, backdropFilter:"blur(20px)" }}>
+                <div style={{ display:"flex", alignItems:"baseline", gap:10, marginBottom:20 }}>
+                  <span style={{ fontSize:15, fontWeight:600, color:T.text, fontFamily:"'Manrope',sans-serif" }}>{generated.result.topic}</span>
+                  <span style={{ fontSize:11, color:T.muted2, fontFamily:"'Inter',sans-serif" }}>{PLATFORM_LABELS[generated.result.platform]}</span>
+                </div>
+                <PlatformCard platform={generated.result.platform} content={generated.result.post} />
+              </div>
+            )}
+
+            {/* BATCH result */}
+            {generated.mode === "batch" && (
+              <>
+                {/* Batch tab strip */}
+                <div style={{ display:"flex", gap:8, marginBottom:20, overflowX:"auto", scrollbarWidth:"none" as any, paddingBottom:4 }}>
+                  {generated.batches.map((batch, i) => {
+                    const active = i === activeIndex;
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => setActiveIndex(i)}
+                        style={{
+                          display:"flex", flexDirection:"column", alignItems:"center", gap:3,
+                          borderRadius:12, flexShrink:0, padding:"10px 18px",
+                          background: active ? T.blueDim : "rgba(255,255,255,0.03)",
+                          border: active ? `1px solid ${T.blueBorder}` : `1px solid ${T.border}`,
+                          cursor:"pointer", outline:"none", transition:"all 0.14s",
+                        }}
+                      >
+                        <span style={{ fontSize:10, fontWeight:700, letterSpacing:"0.10em", color: active ? T.blue : T.muted2, fontFamily:"'Manrope',sans-serif" }}>BATCH {i + 1}</span>
+                        <span style={{ fontSize:11, fontWeight:500, whiteSpace:"nowrap", color: active ? T.muted : T.muted2, fontFamily:"'Inter',sans-serif" }}>{batch.topic.split(" / ")[0]}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Active batch content */}
+                {generated.batches[activeIndex] && (
+                  <>
+                    <div style={{ display:"flex", alignItems:"baseline", gap:10, marginBottom:16 }}>
+                      <span style={{ fontSize:16, fontWeight:600, color:T.text, fontFamily:"'Manrope',sans-serif" }}>Batch {activeIndex + 1}</span>
+                      <span style={{ fontSize:12, color:T.muted2, fontFamily:"'Inter',sans-serif" }}>{generated.batches[activeIndex].topic}</span>
+                    </div>
+                    <div className="platform-cards">
+                      {batchPlatforms.map(platform => {
+                        const content = generated.batches[activeIndex].posts[platform as keyof Post];
+                        if (!content) return null;
+                        return <PlatformCard key={platform} platform={platform} content={content} />;
+                      })}
+                    </div>
+
+                    {/* Prev / Next */}
+                    {generated.batches.length > 1 && (
+                      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginTop:24 }}>
+                        <button
+                          onClick={() => setActiveIndex(i => Math.max(0, i - 1))}
+                          disabled={activeIndex === 0}
+                          style={{ display:"flex", alignItems:"center", gap:5, fontSize:12, fontWeight:500, color: activeIndex === 0 ? "rgba(74,88,112,0.4)" : T.muted2, background:"none", border:"none", cursor: activeIndex === 0 ? "default" : "pointer", transition:"color 0.15s", fontFamily:"'Inter',sans-serif" }}
+                        >
+                          <ChevronLeft size={13} /> Previous batch
+                        </button>
+                        <span style={{ fontSize:12, fontWeight:500, color:T.muted2, fontFamily:"'Manrope',sans-serif" }}>{activeIndex + 1} / {generated.batches.length}</span>
+                        <button
+                          onClick={() => setActiveIndex(i => Math.min(generated.batches.length - 1, i + 1))}
+                          disabled={activeIndex === generated.batches.length - 1}
+                          style={{ display:"flex", alignItems:"center", gap:5, fontSize:12, fontWeight:500, color: activeIndex === generated.batches.length - 1 ? "rgba(74,88,112,0.4)" : T.muted2, background:"none", border:"none", cursor: activeIndex === generated.batches.length - 1 ? "default" : "pointer", transition:"color 0.15s", fontFamily:"'Inter',sans-serif" }}
+                        >
+                          Next batch <ChevronRight size={13} />
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </>
+            )}
           </>
         )}
       </main>
@@ -535,7 +662,7 @@ function GenerateInner() {
 
 export function GenerateClient() {
   return (
-    <Suspense fallback={<div style={{ minHeight: "100vh", background: "#080D10" }} />}>
+    <Suspense fallback={<div style={{ minHeight:"100vh", background:"#0A0D12" }} />}>
       <GenerateInner />
     </Suspense>
   );

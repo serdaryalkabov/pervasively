@@ -23,7 +23,7 @@ export const upsertUser = mutation({
     return await ctx.db.insert("users", {
       clerkId:      args.clerkId,
       email:        args.email,
-      credits:      3,
+      credits:      10,
       examplePosts: args.examplePosts ?? [],
       createdAt:    Date.now(),
     });

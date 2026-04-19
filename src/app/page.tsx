@@ -585,12 +585,12 @@ export default function LandingPage() {
                   <div style={{ fontFamily: "'Manrope',sans-serif", fontSize: 13, fontWeight: 600, color: "var(--text)", lineHeight: 1.2 }}>Ryanair</div>
                   <div style={{ fontSize: 11, color: "var(--muted)", fontFamily: "'Inter',sans-serif" }}>@Ryanair</div>
                 </div>
-                <div style={{ marginLeft: "auto" }}>
+                {/* <div style={{ marginLeft: "auto" }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="#8A9AB8"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622 5.91-5.622Z"/></svg>
-                </div>
+                </div> */}
               </div>
               <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.6, fontFamily: "'Inter',sans-serif", fontWeight: 300, marginBottom: 12 }}>
-                you paid €8 for a seat. you paid €12 to pick it. you paid €6 to print your boarding pass. and you're still surprised by the price. we love you.
+                we sell seats, not windows
               </p>
               <div style={{ display: "flex", gap: 18, borderTop: "1px solid var(--border)", paddingTop: 10 }}>
                 <span style={{ fontSize: 11, color: "var(--muted)", fontFamily: "'Inter',sans-serif", display: "flex", alignItems: "center", gap: 5 }}>
@@ -620,11 +620,7 @@ export default function LandingPage() {
                 </div>
               </div>
               <p style={{ fontSize: 12.5, color: "var(--muted)", lineHeight: 1.65, fontFamily: "'Inter',sans-serif", fontWeight: 300, marginBottom: 12 }}>
-                We tried being professional on LinkedIn.<br/>
-                We tried the thought leadership posts.<br/>
-                The "excited to announce" copy.<br/><br/>
-                Then we posted our unhinged owl.<br/>
-                <span style={{ color: "var(--blue)" }}>3.2M impressions later</span>, here we are.
+                you can escape the earth, now you cant escape the lesson @nasa
               </p>
               <div style={{ display: "flex", gap: 18, borderTop: "1px solid var(--border)", paddingTop: 10 }}>
                 <span style={{ fontSize: 11, color: "var(--muted)", fontFamily: "'Inter',sans-serif", display: "flex", alignItems: "center", gap: 5 }}>
@@ -654,7 +650,7 @@ export default function LandingPage() {
                 </div>
               </div>
               <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.6, fontFamily: "'Inter',sans-serif", fontWeight: 300, marginBottom: 12 }}>
-                our ice cream machine works btw 🍦
+                When the tweets are as broken as the ice cream machine.
               </p>
               <div style={{ display: "flex", gap: 18, borderTop: "1px solid var(--border)", paddingTop: 10 }}>
                 <span style={{ fontSize: 11, color: "var(--muted)", fontFamily: "'Inter',sans-serif", display: "flex", alignItems: "center", gap: 5 }}>

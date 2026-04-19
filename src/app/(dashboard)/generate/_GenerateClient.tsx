@@ -524,7 +524,7 @@ function GenerateInner() {
               <p style={{ fontSize:12, color: credits < creditCost ? "#E07070" : T.muted2, fontFamily:"'Inter',sans-serif" }}>
                 {credits < creditCost
                   ? `Not enough credits — you need ${creditCost}, you have ${credits}.`
-                  : `${creditCost} credit${creditCost > 1 ? "s" : ""} will be used`}
+                  : ``}
               </p>
               <button
                 onClick={credits < creditCost ? () => router.push("/billing") : handleGenerate}

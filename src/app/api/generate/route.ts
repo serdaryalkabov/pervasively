@@ -90,10 +90,12 @@ function extractJSON(content: Anthropic.Messages.ContentBlock[]): any {
     .map(b => (b as Anthropic.Messages.TextBlock).text)
     .join("");
 
-  // Find the outermost { ... } in the response, ignoring any prose before/after
   const match = text.match(/\{[\s\S]*\}/);
   if (!match) throw new Error("No JSON object found in response");
-  return JSON.parse(match[0]);
+
+  // Strip any citation markup that may have leaked from web search context
+  const clean = match[0].replace(/<cite[^>]*>|<\/cite>/g, "");
+  return JSON.parse(clean);
 }
 
 /* ─────────────────────────────────────────────
@@ -129,6 +131,7 @@ General rules:
 - The post must reference the actual product and audience — no generic content
 - Never sound AI-generated. No em-dashes. Write like a human who types fast and doesn't proofread twice
 - DON'T BE BORING. If it could appear in a brand guidelines deck, delete it and start over
+- CRITICAL: The final post must contain zero citation tags, reference markers, or markup of any kind (e.g. <cite>, [1], (Source), etc.). Clean plain text only.
 
 Respond ONLY with a valid JSON object, no markdown, no explanation:
 {
@@ -204,6 +207,7 @@ General rules:
 - Vary opening lines across all batches — no two posts should start the same way
 - Never sound AI-generated. No em-dashes. Write like a human who types fast and doesn't proofread twice
 - DON'T BE BORING. If a post could appear in a brand guidelines deck, delete it and start over
+- CRITICAL: Posts must contain zero citation tags, reference markers, or markup of any kind (e.g. <cite>, [1], (Source), etc.). Clean plain text only.
 
 Respond ONLY with a valid JSON object in this exact structure, no markdown, no explanation:
 {

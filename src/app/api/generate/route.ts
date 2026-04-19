@@ -82,6 +82,21 @@ function buildPlatformRules(platforms: string[], tone: string) {
 }
 
 /* ─────────────────────────────────────────────
+   HELPERS
+───────────────────────────────────────────── */
+function extractJSON(content: Anthropic.Messages.ContentBlock[]): any {
+  const text = content
+    .filter(b => b.type === "text")
+    .map(b => (b as Anthropic.Messages.TextBlock).text)
+    .join("");
+
+  // Find the outermost { ... } in the response, ignoring any prose before/after
+  const match = text.match(/\{[\s\S]*\}/);
+  if (!match) throw new Error("No JSON object found in response");
+  return JSON.parse(match[0]);
+}
+
+/* ─────────────────────────────────────────────
    SINGLE MODE — one post, one platform
 ───────────────────────────────────────────── */
 async function handleSingle(body: any) {
@@ -127,8 +142,7 @@ Respond ONLY with a valid JSON object, no markdown, no explanation:
     messages: [{ role: "user", content: prompt }],
   });
 
-  const raw = message.content.filter(b => b.type === "text").map(b => (b as any).text).join("");
-  const parsed = JSON.parse(raw);
+  const parsed = extractJSON(message.content);
 
   return NextResponse.json({
     success: true,
@@ -218,8 +232,7 @@ The batches array must contain exactly ${batchCount} objects.`;
     messages: [{ role: "user", content: prompt }],
   });
 
-  const raw = message.content.filter(b => b.type === "text").map(b => (b as any).text).join("");
-  const parsed = JSON.parse(raw);
+  const parsed = extractJSON(message.content);
 
   return NextResponse.json({
     success: true,

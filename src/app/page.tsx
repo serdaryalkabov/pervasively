@@ -560,14 +560,15 @@ export default function LandingPage() {
               </h1>
             </div>
             <p style={{ fontSize: 17, fontWeight: 300, lineHeight: 1.6, color: "var(--muted)", maxWidth: 460, marginBottom: 40, opacity: 0, animation: "fadeUp .6s .25s forwards" }}>
-              Your brand posts like a corporate robot. Your competitors don't. Pervasively generates a full week of content that actually sounds human — across Twitter, LinkedIn, and Instagram.
+              {/* Your brand posts like a corporate robot. Your competitors don't. Pervasively generates a full week of content that actually sounds human — across Twitter, LinkedIn, and Instagram. */}
+              The only AI marketing assistant that sounds human. Your customers are tired of formal language and corporate terms. Give them content that feels really human – across X, LinkedIn, and Instagram.
             </p>
             <div style={{ opacity: 0, animation: "fadeUp .6s .4s forwards", display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
               <Link href="/sign-up" className="green-btn" style={{ padding: "14px 32px", fontSize: 16, borderRadius: 12 }}>
                 Get started free
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
               </Link>
-              <p style={{ fontSize: 12, color: "var(--muted2)", fontFamily: "'Inter',sans-serif" }}>3 free credits · no card required</p>
+              <p style={{ fontSize: 12, color: "var(--muted2)", fontFamily: "'Inter',sans-serif" }}>5 free credits · no card required</p>
             </div>
           </div>
 
@@ -686,8 +687,8 @@ export default function LandingPage() {
           <div className="feature-card feature-large reveal glass" style={{ borderRadius: 16, padding: 36, position: "relative", overflow: "hidden", gridColumn: "span 2", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48, alignItems: "center" }}>
             <div>
               <div style={{ marginBottom: 20, color: "var(--blue)" }}><svg viewBox="0 0 24 24" style={{ width: 22, height: 22, stroke: "var(--blue)", fill: "none", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const }}><path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" /></svg></div>
-              <div style={{ fontFamily: "'Manrope',sans-serif", fontSize: 18, fontWeight: 600, color: "var(--text)", letterSpacing: -0.3, marginBottom: 10 }}>Brand DNA — set it once, use it forever</div>
-              <div style={{ fontSize: 13.5, color: "var(--muted)", lineHeight: 1.6, fontFamily: "'Inter',sans-serif" }}>Your brand brief — voice, audience, story — is stored once. Every generation inherits it automatically. No copy-pasting prompts. No starting over. Just consistent, on-brand content every week.</div>
+              <div style={{ fontFamily: "'Manrope',sans-serif", fontSize: 18, fontWeight: 600, color: "var(--text)", letterSpacing: -0.3, marginBottom: 10 }}>Brand DNA: set it once, use it forever</div>
+              <div style={{ fontSize: 13.5, color: "var(--muted)", lineHeight: 1.6, fontFamily: "'Inter',sans-serif" }}>Your brand brief (voice, audience, story) is stored. Every generation inherits it automatically, no copy-pasting prompts. Just consistent, on-brand content every time.</div>
             </div>
             <div style={{ background: "rgba(255,255,255,0.03)", backdropFilter: "blur(10px)", borderRadius: 12, padding: 20, display: "flex", flexDirection: "column", gap: 10, border: "1px solid rgba(255,255,255,0.07)" }}>
               {[
@@ -707,9 +708,9 @@ export default function LandingPage() {
           {/* Small cards */}
           {[
             { icon: <svg viewBox="0 0 24 24" style={{ width: 22, height: 22, stroke: "var(--blue)", fill: "none", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const }}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>, title: "Platform-native, always", desc: "Twitter posts hook hard. LinkedIn posts tell a story. Instagram captions stop the scroll. Each one written for where it lives.", delay: "" },
-            { icon: <svg viewBox="0 0 24 24" style={{ width: 22, height: 22, stroke: "var(--blue)", fill: "none", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const }}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>, title: "One-click regeneration", desc: "Don't like a post? Hit regenerate. Only that post changes. The rest of your week stays intact.", delay: " reveal-d1" },
-            { icon: <svg viewBox="0 0 24 24" style={{ width: 22, height: 22, stroke: "var(--blue)", fill: "none", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const }}><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>, title: "No repeating yourself", desc: "Pervasively tracks every angle you've used. Each new week is fresh territory — no recycled takes, no déjà vu.", delay: "" },
-            { icon: <svg viewBox="0 0 24 24" style={{ width: 22, height: 22, stroke: "var(--blue)", fill: "none", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const }}><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>, title: "10 minutes a week", desc: "That's the entire time commitment. Set up your brand once, generate on Monday, post all week. Done.", delay: " reveal-d1" },
+            { icon: <svg viewBox="0 0 24 24" style={{ width: 22, height: 22, stroke: "var(--blue)", fill: "none", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const }}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>, title: "One-click regeneration", desc: "Don't like a post? Hit regenerate.", delay: " reveal-d1" },
+            { icon: <svg viewBox="0 0 24 24" style={{ width: 22, height: 22, stroke: "var(--blue)", fill: "none", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const }}><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>, title: "No repeating yourself", desc: "Pervasively tracks every angle you've used. Each generation is fresh territory: no recycled takes, no déjà vu.", delay: "" },
+            { icon: <svg viewBox="0 0 24 24" style={{ width: 22, height: 22, stroke: "var(--blue)", fill: "none", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const }}><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>, title: "10 minutes", desc: "That's the entire time commitment. Set up your brand once and generate single or batch posts.", delay: " reveal-d1" },
           ].map((f, i) => (
             <div key={i} className={`feature-card glass reveal${f.delay}`} style={{ borderRadius: 16, padding: 36, position: "relative", overflow: "hidden" }}>
               <div style={{ marginBottom: 20, color: "var(--blue)" }}>{f.icon}</div>
@@ -735,7 +736,7 @@ export default function LandingPage() {
             },
             {
               icon: <svg viewBox="0 0 24 24" style={{ width: 22, height: 22, fill: "var(--blue)" }}><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" /><rect x="2" y="9" width="4" height="12" /><circle cx="4" cy="4" r="2" /></svg>,
-              name: "LinkedIn", desc: "Founder stories, sharp opinions, real moments. Not 'excited to announce' — content that people actually comment on.", tags: ["Storytelling", "Opinions", "Wins"], delay: " reveal-d2"
+              name: "LinkedIn", desc: "Founder stories, sharp opinions, real moments. Not 'excited to announce': content that people actually comment on.", tags: ["Storytelling", "Opinions", "Wins"], delay: " reveal-d2"
             },
           ].map((p, i) => (
             <div key={i} className={`glass reveal${p.delay}`} style={{ borderRadius: 18, padding: "36px 32px", position: "relative", overflow: "hidden" }}>
@@ -831,7 +832,7 @@ export default function LandingPage() {
           </div>
         </div>
         <p className="reveal" style={{ marginTop: 20, textAlign: "center", fontSize: 13, color: "var(--muted2)", fontFamily: "'Inter',sans-serif" }}>
-          New accounts start with <strong style={{ color: "var(--blue)", fontWeight: 600 }}>3 free credits</strong> — no card required.
+          New accounts start with <strong style={{ color: "var(--blue)", fontWeight: 600 }}>5 free credits</strong> – no card required.
         </p>
       </section>
 
@@ -841,14 +842,14 @@ export default function LandingPage() {
         <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}>
           <h2 style={{ marginBottom: 0 }}>Your brand has a voice.<br /><span className="accent">Time to use it.</span></h2>
           <p style={{ fontSize: 16, color: "var(--muted)", maxWidth: 480, lineHeight: 1.7, fontFamily: "'Inter',sans-serif" }}>
-            Pervasively turns your brand brief into a week of content that doesn't sound like it was written by a committee. Try it free.
+            Pervasively turns your brand brief into a content that doesn't sound like it was written by a committee. Try it free.
           </p>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, marginTop: 8 }}>
             <Link href="/sign-up" className="green-btn" style={{ padding: "16px 44px", fontSize: 15 }}>
               Create your free account
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
             </Link>
-            <p style={{ fontSize: 12, color: "var(--muted2)", fontFamily: "'Inter',sans-serif" }}>3 free credits · No card required · Start in minutes</p>
+            <p style={{ fontSize: 12, color: "var(--muted2)", fontFamily: "'Inter',sans-serif" }}>5 free credits · No card required · Start in minutes</p>
           </div>
         </div>
       </div>

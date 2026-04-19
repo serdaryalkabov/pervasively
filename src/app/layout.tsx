@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: "Pervasively turns your product knowledge into a full week of platform-ready content — Twitter/X, Instagram, LinkedIn — in under 10 minutes. No prompting. No guessing. Just post.",
   icons: { icon: [{ url: '/pervasively.jpg', type: 'image/png', sizes: '32x32' }] },
   openGraph: {
-    title: "Pervasively – Content engine for solopreneurs",
+    title: "Pervasively – The only marketing assistant that sounds human",
     description: "The only marketing assistant that sounds human.",
     url: "https://pervasively.org",
     siteName: "Pervasively",

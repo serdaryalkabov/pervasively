@@ -3,12 +3,12 @@ import { Providers } from "@/components/providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Pervasively – Content engine for solopreneurs",
+  title: "Pervasively – The only marketing assistant that sounds human",
   description: "Pervasively turns your product knowledge into a full week of platform-ready content — Twitter/X, Instagram, LinkedIn — in under 10 minutes. No prompting. No guessing. Just post.",
   icons: { icon: [{ url: '/pervasively.jpg', type: 'image/png', sizes: '32x32' }] },
   openGraph: {
     title: "Pervasively – Content engine for solopreneurs",
-    description: "Generate 7 days of platform-native social posts from your product brief. No prompting. Just post.",
+    description: "The only marketing assistant that sounds human.",
     url: "https://pervasively.org",
     siteName: "Pervasively",
     images: [
@@ -16,14 +16,14 @@ export const metadata: Metadata = {
         url: "https://pervasively.org/og-pervasively.png",
         width: 1200,
         height: 630,
-        alt: "Pervasively – Content engine for solopreneurs",
+        alt: "Pervasively – The only marketing assistant that sounds human",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Pervasively – Content engine for solopreneurs",
+    title: "Pervasively – The only marketing assistant that sounds human",
     description: "Generate 7 days of platform-native social posts from your product brief. No prompting. Just post.",
     images: ["https://pervasively.org/og-pervasively.png"],
   },

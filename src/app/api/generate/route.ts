@@ -139,7 +139,7 @@ Respond ONLY with a valid JSON object, no markdown, no explanation:
 }`;
 
   const message = await client.messages.create({
-    model: "claude-sonnet-4-20250514",
+    model: "claude-sonnet-4-20250929",
     max_tokens: 1500,
     tools: [{ type: "web_search_20250305", name: "web_search" } as any],
     messages: [{ role: "user", content: prompt }],
@@ -230,7 +230,7 @@ Only include platforms from this list: ${platforms.join(", ")}.
 The batches array must contain exactly ${batchCount} objects.`;
 
   const message = await client.messages.create({
-    model: "claude-sonnet-4-20250514",
+    model: "claude-sonnet-4-20250929",
     max_tokens: 8000,
     tools: [{ type: "web_search_20250305", name: "web_search" } as any],
     messages: [{ role: "user", content: prompt }],
